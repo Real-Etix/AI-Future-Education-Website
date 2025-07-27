@@ -1,0 +1,190 @@
+@use '@/assets/css/default.scss' as *;
+aside {
+    width: var(--sidebar-width);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    -webkit-backface-visibility: hidden;
+    @include marpad(
+        0, 0, 0, 0, 
+        14px, 28px, 14px, 28px
+    );
+    .title {
+        @extend %flex-center;
+        color: var(--color-symbol);
+        justify-content: flex-start;
+        gap: 15px;
+        @include marpad(
+            14px, 0, 14px, 0,
+            24px, 0, 0, 0
+        );
+        .logo {
+            border-radius: 10px;
+            background-color: var(--color-element);
+            @include square-parent(25%);
+            img {
+                border-radius: 10px;
+                @include square-child();
+            }
+        }
+        a {
+            @extend %default-subheading-format;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+    }
+    .append-input {
+        @extend %flex-center;
+        background-color: var(--color-element);
+        border-radius: 10px;
+        @include marpad(
+            14px, 0, 14px, 0, 
+            14px, 7px, 14px, 7px
+        );
+        input {
+            @extend %default-text-format;
+            width: 100%;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+    }
+    .text-symbol {
+        position: absolute;
+    }
+    .text {
+        @extend %default-subheading-format;
+        padding-left: 36px;
+        white-space: nowrap;
+    }
+    .main-menu, .chat-menu, .toggle-menu, .user-menu-toggle {
+        @include marpad(
+            0, -28px, 0, -14px, 
+            0, 0, 0, 0
+        );
+        .button {
+            @extend %flex-center;
+            width: 100%;
+        }
+    }
+    .main-menu, .chat-menu, .toggle-menu, .user-menu {
+        .button {
+            &:hover, &.router-link-exact-active{
+                // background-color: var(--color-background-hover);
+                .text {
+                    font-weight: $bold;
+                }
+            }
+        }
+    }
+    .menu-heading {
+        @extend %flex-center;
+        justify-content: space-between;
+        @include marpad(
+            14px, -28px, 0, -14px, 
+            7px, 28px, 7px, 14px
+        );
+    }
+    .main-menu {
+        display: grid;
+        .button {
+            @include marpad(
+                0, 0, 0, 0, 
+                7px, 28px, 7px, 14px
+            );
+        }
+    }
+    .chat-menu {
+        display: inline-block;
+        // overflow-x: hidden;
+        // overflow-y: scroll;
+        .button {
+            width: 100%;
+            @include marpad(
+                0, 0, 0, 0, 
+                7px, 28px, 7px, 14px
+            );
+            .text {
+                @extend %default-text-format;
+                max-width: 100%;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+        // &::-webkit-scrollbar {
+        //     width: 5px;
+        // }
+        // &::-webkit-scrollbar-track {
+        //     background: transparent;
+        // }
+        // &::-webkit-scrollbar-thumb {
+        //     border: 20px;
+        //     background: var(--color-symbol);
+        //     box-shadow: inset 0 0 5px transparent;
+        //     border-radius: 5px;
+        // }
+    }
+    .toggle-menu {
+        .button {
+            @include marpad(
+                0, 0, 0, 0, 
+                10.5px, 28px, 10.5px, 14px
+            );
+        }
+        .material-symbols-outlined {
+            &.expanded {
+                transform: rotate(180deg);
+            }
+        }
+    }
+    .user {
+        position: relative;
+        width: 100%;
+    }
+    .user-menu {
+        display: grid;
+        left: 0px;
+        right: 0px;
+        bottom: 49px;
+        background-color: var(--color-background);
+        border: 2px solid var(--color-background-section);
+        border-radius: 10px;
+        position: absolute;
+        box-sizing: border-box;
+        @include marpad(
+            0, -14px, 0, -14px,
+            0, 0, 0, 0
+        );
+        @media (max-width: 768px) {
+            bottom: 42px;
+        }
+        @media (max-width: 576px) {
+            bottom: 39px;
+        }
+        .button {
+            @extend %flex-center;
+            width: 100%;
+            @include marpad(
+                0, 0, 0, 0, 
+                10.5px, calc(14px - 2px), 10.5px, calc(14px - 2px)
+            );
+        }
+    }
+    .user-menu-toggle {
+        @extend %flex-center;
+        .button {
+            justify-content: space-between;
+            @include marpad(
+                0, 0, 0, 0, 
+                10.5px, 28px, 10.5px, 14px
+            );
+        }
+        .material-symbols-outlined {
+            &.expanded {
+                transform: rotate(180deg);
+            }
+        }
+    }
+}

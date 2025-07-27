@@ -1,0 +1,51 @@
+<main class="home-page">
+    <div class="brand-title">
+        <h1>Vicuna</h1>
+    </div>
+    <div class="main-input">
+        <textarea id="main-input-area" v-model="inputText" @keyup.enter="goToChat" rows="5" placeholder="今天想要學習什麼價值觀"></textarea>
+        <div class="upload">
+            <button>
+                <span class="material-symbols-outlined" @click="goToChat">arrow_upward</span>
+            </button>
+        </div>
+    </div>
+    <div class="category-select">
+        <div class="overlap">
+            <div class="button-inline">
+                <button @click="changeShowing(0)" :class="{ 'active': isShowing === 0 }">故事推薦</button>
+                <button @click="changeShowing(1)" :class="{ 'active': isShowing === 1 }">價值觀學習</button>
+                <button @click="changeShowing(2)" :class="{ 'active': isShowing === 2 }">相關諮訊</button>
+            </div>
+            <div class="toggle-expand">
+                <span class="material-symbols-outlined">arrow_drop_down</span>
+            </div>
+        </div>
+    </div>
+    <transition name="list" appear mode="out-in">
+        <div class="item-select" v-if="isShowing == 0">
+            <router-link class="button" v-for="story in storyList" :to="story.link">
+                <label class="text">{{ story.title }}</label>
+                <div class="img">
+                    <img :src="story.img" v-if="story.img">
+                </div>
+            </router-link>
+        </div>
+        <div class="item-select" v-else-if="isShowing == 1">
+            <router-link class="button" v-for="value in valueList" :to="value.link">
+                <label class="text">{{ value.title }}</label>
+                <div class="img">
+                    <img :src="value.img" v-if="value.img">
+                </div>
+            </router-link>
+        </div>
+        <div class="item-select" v-else-if="isShowing == 2">
+            <router-link class="button" v-for="consult in consultList" :to="consult.link">
+                <label class="text">{{ consult.title }}</label>
+                <div class="img">
+                    <img :src="consult.img" v-if="consult.img">
+                </div>
+            </router-link>
+        </div>
+    </transition>
+</main>

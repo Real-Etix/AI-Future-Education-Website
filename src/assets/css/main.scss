@@ -1,0 +1,63 @@
+@use './default.scss';
+@import './base.css';
+
+#app {
+  display: flex;
+  margin: 0;
+  font-weight: normal;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+a {
+  text-decoration: none;
+}
+button {
+  cursor: pointer;
+  appearance: none;
+  border: none;
+  outline: none;
+  background: none;
+}
+input, textarea {
+  background: none;
+  border: none;
+  outline: none;
+  resize: none;
+  &::placeholder {
+    color: var(--color-text-placeholder);
+  }
+}
+.flex {
+  flex: 1 1 0;
+}
+.material-symbols-outlined {
+  @extend %default-symbol-format;
+}
+.main {
+  width: 100%;
+  padding: 24px;
+  padding-left: 0;
+  font-weight: normal;
+  display: flex;
+}
+main {
+  width: 100%;
+  border-radius: 10px;
+  background-color: var(--color-background-section);
+  overflow-y: scroll;
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--color-background-section);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border: 20px;
+    background: var(--color-symbol);
+    box-shadow: inset 0 0 5px var(--color-background-section);
+    border-radius: 5px;
+  }
+}
