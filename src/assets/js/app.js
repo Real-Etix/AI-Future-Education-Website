@@ -11,8 +11,8 @@ export default {
     },
     methods: {
         // Load sidebar
-        showSidebar() {
-            this.renderSidebar = !this.renderSidebar;
+        login() {
+            this.renderSidebar = true;
         },
 
         // Rerender the sidebar to update the sidebar list
