@@ -1,13 +1,11 @@
-<script setup>
-import { RouterView } from 'vue-router'
-/* import Sidebar from './components/Sidebar.vue'; */
+<script src="@/assets/js/app">
 </script>
 
 <template>
- <!-- <Sidebar head="XXChatBot"/> -->
- <!-- <div class="main"> -->
-    <RouterView />
-<!--  </div> -->
+ <Sidebar head="Vicuna" :userID = 'userID' v-if="renderSidebar"/>
+ <div class="main">
+    <router-view :userID = 'userID' @show-sidebar="showSidebar" @temp-update-chat="forceRerender"/>
+ </div>
 </template>
 
 <style lang="scss" scoped>

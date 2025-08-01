@@ -8,7 +8,8 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/AI-Future-Education-Website/',
+  // base: '/AI-Future-Education-Website/',
+  base: '/',
   build: { 
     cssCodeSplit: true,
     minify: false, // Added to stop compacting
@@ -22,12 +23,18 @@ export default defineConfig({
       // },
       output: {
         dir: 'dist/',
-        entryFileNames: 'assets/js/[name]-entry.js',
-        // assetFileNames: 'assets/css/[name]-asset.css',
-        assetFileNames: (assetInfo) => {
-          return assetInfo.names[0];
+        entryFileNames: 'static/js/[name]-entry.js',
+        assetFileNames: ({names = []}) => {
+          const [name = ''] = names;
+          if (/\.(gif|jpe?g|png|svg)$/.test(name)) {
+            return 'static/images/[name][extname]';
+          }
+          if (/\.css$/.test(name)) {
+            return 'static/css/[name]-asset[extname]';
+          }
+          return 'static/[name]-[hash][extname]';
         },
-        chunkFileNames: 'assets/js/[name]-chunk.js',
+        chunkFileNames: 'static/js/[name]-chunk.js',
         manualChunks: undefined,
         // globals: {
           // vue: 'Vue'

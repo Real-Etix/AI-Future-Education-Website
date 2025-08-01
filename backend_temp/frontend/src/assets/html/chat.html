@@ -1,9 +1,0 @@
-<main class="chat-page">
-    <h2>{{ chatTitle }}</h2>
-    <p v-for="message in sortedMessages">
-        {{ message.role }}: <span v-html="message.message"></span>
-    </p>
-    <div class="main-input">
-        <input id="message-input" type="text" v-model="newMessage" :disabled="status == 'Pending'" placeholder="Test Message" @keyup.enter="sendMessage"/>
-    </div>
-</main>

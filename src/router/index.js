@@ -13,21 +13,21 @@ const router = createRouter({
       name:'landingpage',
       component: Landingpage,
     },
-    {
-      path: '/homecontainer',
-      name:'homecontainer',
-      component: HomeContainer,
-    },
+    // {
+    //   path: '/homecontainer',
+    //   name:'homecontainer',
+    //   component: HomeContainer,
+    // },
     {
       path: '/home',
       name: 'home',
       component: Home,
     },
-    {
-      path: '/chatbotcontainer',
-      name: 'chatbotcontainer',
-      component: ChatbotContainer,
-    },
+    // {
+    //   path: '/chatbotcontainer',
+    //   name: 'chatbotcontainer',
+    //   component: ChatbotContainer,
+    // },
     {
       path:'/chatbot',
       name: 'chatbot',
@@ -46,6 +46,11 @@ const router = createRouter({
       name: 'history',
       component: () => import('../views/History.vue'),
     },
+    {
+      path: '/chat/:id/',
+      name: 'chat',
+      component: ChatbotContainer,
+    }
   ],
 })
 

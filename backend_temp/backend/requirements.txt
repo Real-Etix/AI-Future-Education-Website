@@ -1,4 +1,0 @@
-Flask[async]
-Flask-SQLAlchemy
-poe_api_wrapper
-sqlite3

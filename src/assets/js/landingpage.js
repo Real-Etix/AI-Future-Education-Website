@@ -2,7 +2,8 @@ export default {
     name: 'Homepage',
     methods: {
       goToChatbot() {
-        this.$router.push('/homecontainer');
+        this.$emit('show-sidebar');
+        this.$router.push('/home');
       }
     }
   }
