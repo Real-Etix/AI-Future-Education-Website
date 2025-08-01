@@ -1,11 +1,35 @@
 import chatList from "../display/chatList";
 export default {
+    props: {
+        userID: Number,
+    },
     data() {
         return {
             chatList: chatList
         }
     },
+    mounted() {
+        // Obtain the chat list from server.
+        fetch('/chat-api/get-chat-list', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({userID: this.userID})
+        })
+        .then(response => response.json())
+        .then(result => {
+            this.chatList = result.map(
+                (row) => ({
+                    id: row['id'],
+                    name: row['name'],
+                    link: '/chat/' + row['id'],
+                    lastUpdated: new Date(row['lastUpdated'])
+                })
+            );
+        })
+        .catch(error => console.error('Error submitting data:', error));
+    },
     computed: {
+        // Obtain a dictionary of chat lists grouped in time.
         sortedChatList: {
             get() {
                 const today = new Date();
@@ -19,6 +43,10 @@ export default {
                         item.lastUpdated.getDate()
                     );
                     let dateVisual;
+                    // Change the visuals of the date based on last update date
+                    // today -> 今日
+                    // yesterday -> 昨日
+                    // this year -> remove the year part
                     if (comparingDate.getTime() === todayDate.getTime()) {
                         dateVisual = '今日';
                     } else if (comparingDate.getTime() === yesterdayDate.getTime()) {
