@@ -9085,17 +9085,17 @@ const __vitePreload = function preload(baseModule, deps, importerUrl) {
 const storyList = [
   {
     title: "木蘭從軍",
-    img: TemplateImage,
+    img: "/static/template-pic.jpeg",
     link: "/placeholder"
   },
   {
     title: "木蘭從軍",
-    img: TemplateImage,
+    img: "/static/template-pic.jpeg",
     link: "/placeholder"
   },
   {
     title: "木蘭從軍",
-    img: TemplateImage,
+    img: "/static/template-pic.jpeg",
     link: "/placeholder"
   },
   {
@@ -9119,63 +9119,62 @@ const storyList = [
     link: "/placeholder"
   }
 ];
-const TemplateImage$1 = "/static/images/template-pic.jpeg";
 const valueList = [
   {
     title: "承諾",
-    img: TemplateImage$1,
+    img: "/static/template-pic.jpeg",
     link: "/placeholder"
   },
   {
     title: "承諾",
-    img: TemplateImage$1,
+    img: "/static/template-pic.jpeg",
     link: "/placeholder"
   },
   {
     title: "承諾",
-    img: TemplateImage$1,
+    img: "/static/template-pic.jpeg",
     link: "/placeholder"
   },
   {
     title: "承諾",
-    img: TemplateImage$1,
+    img: "/static/template-pic.jpeg",
     link: "/placeholder"
   },
   {
     title: "承諾",
-    img: TemplateImage$1,
+    img: "/static/template-pic.jpeg",
     link: "/placeholder"
   },
   {
     title: "承諾",
-    img: TemplateImage$1,
+    img: "/static/template-pic.jpeg",
     link: "/placeholder"
   },
   {
     title: "承諾",
-    img: TemplateImage$1,
+    img: "/static/template-pic.jpeg",
     link: "/placeholder"
   }
 ];
 const consultList = [
   {
     title: "行為諮詢",
-    img: TemplateImage$1,
+    img: "/static/template-pic.jpeg",
     link: "./placeholder"
   },
   {
     title: "行為諮詢",
-    img: TemplateImage$1,
+    img: "/static/template-pic.jpeg",
     link: "./placeholder"
   },
   {
     title: "行為諮詢",
-    img: TemplateImage$1,
+    img: "/static/template-pic.jpeg",
     link: "./placeholder"
   },
   {
     title: "行為諮詢",
-    img: TemplateImage$1,
+    img: "/static/template-pic.jpeg",
     link: "./placeholder"
   }
 ];
