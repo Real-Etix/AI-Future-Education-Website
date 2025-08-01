@@ -9119,44 +9119,44 @@ const storyList = [
     link: "/placeholder"
   }
 ];
+const TemplateImage$1 = "/static/images/template-pic.jpeg";
 const valueList = [
   {
     title: "承諾",
-    img: TemplateImage,
+    img: TemplateImage$1,
     link: "/placeholder"
   },
   {
     title: "承諾",
-    img: TemplateImage,
+    img: TemplateImage$1,
     link: "/placeholder"
   },
   {
     title: "承諾",
-    img: TemplateImage,
+    img: TemplateImage$1,
     link: "/placeholder"
   },
   {
     title: "承諾",
-    img: TemplateImage,
+    img: TemplateImage$1,
     link: "/placeholder"
   },
   {
     title: "承諾",
-    img: TemplateImage,
+    img: TemplateImage$1,
     link: "/placeholder"
   },
   {
     title: "承諾",
-    img: TemplateImage,
+    img: TemplateImage$1,
     link: "/placeholder"
   },
   {
     title: "承諾",
-    img: TemplateImage,
+    img: TemplateImage$1,
     link: "/placeholder"
   }
 ];
-const TemplateImage$1 = "/static/images/template-pic.jpeg";
 const consultList = [
   {
     title: "行為諮詢",
