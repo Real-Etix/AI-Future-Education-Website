@@ -1,37 +1,37 @@
 const valueList = [
     {
         title: '承諾',
-        img: './template-pic.jpeg',
+        img: TemplateImage,
         link: '/placeholder'
     },
     {
         title: '承諾',
-        img: './template-pic.jpeg',
+        img: TemplateImage,
         link: '/placeholder'
     },
     {
         title: '承諾',
-        img: './template-pic.jpeg',
+        img: TemplateImage,
         link: '/placeholder'
     },
     {
         title: '承諾',
-        img: './template-pic.jpeg',
+        img: TemplateImage,
         link: '/placeholder'
     },
     {
         title: '承諾',
-        img: './template-pic.jpeg',
+        img: TemplateImage,
         link: '/placeholder'
     },
     {
         title: '承諾',
-        img: './template-pic.jpeg',
+        img: TemplateImage,
         link: '/placeholder'
     },
     {
         title: '承諾',
-        img: './template-pic.jpeg',
+        img: TemplateImage,
         link: '/placeholder'
     }
 ]

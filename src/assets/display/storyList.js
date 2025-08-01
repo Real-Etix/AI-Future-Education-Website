@@ -1,17 +1,17 @@
 const storyList = [
     {
         title: '木蘭從軍',
-        img: './template-pic.jpeg',
+        img: TemplateImage,
         link: '/placeholder'
     },
     {
         title: '木蘭從軍',
-        img: './template-pic.jpeg',
+        img: TemplateImage,
         link: '/placeholder'
     },
     {
         title: '木蘭從軍',
-        img: './template-pic.jpeg',
+        img: TemplateImage,
         link: '/placeholder'
     },
     {

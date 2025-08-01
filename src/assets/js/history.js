@@ -21,7 +21,7 @@ export default {
                 (row) => ({
                     id: row['id'],
                     name: row['name'],
-                    link: '/chat/' + row['id'],
+                    link: '/chatbot/' + row['id'],
                     lastUpdated: new Date(row['lastUpdated'])
                 })
             );

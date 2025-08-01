@@ -1,5 +1,5 @@
 // import Sidebar from '@/components/Sidebar.vue'
-export default{
+export default {
 // components: {
 //     Sidebar
 //   },
@@ -20,8 +20,8 @@ export default{
       () => this.$route.params.id,
       (newId, oldId) => {
         this.chatID = newId;
-        this.chatMessages = [];
-        this.newMessage = '';
+        this.message = '';
+        this.messages = [];
         fetch('/chat-api/get-chat-message', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
@@ -29,9 +29,9 @@ export default{
         })
         .then(response => response.json())
         .then(result => {
-          this.chatTitle = result['title']
-          this.chatMessages = result['result'].map((row) => ({
-            role: row['isUser'] ? 'User' : 'Assistant',
+          this.title = result['title']
+          this.messages = result['result'].map((row) => ({
+            author: row['isUser'] ? 'student' : 'teacher',
             text: row['message'].replace(/(\r\n|\r|\n)/g, '<br/>'),
             createdAt: new Date(row['lastUpdated'])
           }));
@@ -53,7 +53,7 @@ export default{
     .then(result => {
       this.title = result['title'];
       this.messages = result['result'].map((row) => ({
-        role: row['isUser'] ? 'student' : 'teacher',
+        author: row['isUser'] ? 'student' : 'teacher',
         text: row['message'].replace(/(\r\n|\r|\n)/g, '<br/>'),
         createdAt: new Date(row['lastUpdated'])
       }));
@@ -77,8 +77,8 @@ export default{
       this.status = 'Pending'
       const message = this.message;
       this.messages.push({
-        text: this.message,
         author: 'student',
+        text: this.message,
         createdAt: new Date()
       });
       this.message = '';
