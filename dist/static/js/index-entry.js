@@ -9030,7 +9030,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
 const App = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render]]);
 const scriptRel = "modulepreload";
 const assetsURL = function(dep) {
-  return "/" + dep;
+  return "/AI-Future-Education-Website/" + dep;
 };
 const seen = {};
 const __vitePreload = function preload(baseModule, deps, importerUrl) {
@@ -9743,7 +9743,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 }
 const History = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", render], ["__scopeId", "data-v-adf4c5e4"]]);
 const router = createRouter({
-  history: createWebHistory("/"),
+  history: createWebHistory("/AI-Future-Education-Website"),
   routes: [
     {
       path: "/",

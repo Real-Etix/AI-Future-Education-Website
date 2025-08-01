@@ -39,7 +39,7 @@ def show_chat_website(chatID):
     return render_template('index.html')
 
 # Render static files
-@app.route('/static/<path:path>')
+@app.route('/AI-Future-Education-Website/static/<path:path>')
 def serve_static(path):
     return send_from_directory(app.static_folder, path) # type: ignore
 
