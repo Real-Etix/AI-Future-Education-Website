@@ -1,4 +1,3 @@
-import chatList from "../display/chatList";
 export default {
     props: {
         head: String,
@@ -9,7 +8,7 @@ export default {
             historyExpanded: false,
             userMenuExpanded: false,
             newChatName: '',
-            chatList: chatList,
+            chatList: [],
         }
     },
     mounted() {
@@ -24,7 +23,7 @@ export default {
                 (row) => ({
                     id: row['id'],
                     name: row['name'],
-                    link: '/chat/' + row['id'],
+                    link: '/chatbot/' + row['id'],
                     lastUpdated: new Date(row['lastUpdated'])
                 })
             );
@@ -61,7 +60,7 @@ export default {
             this.chatList.push({
                 id: chatID,
                 name: this.newChatName,
-                link: '/chat/' + chatID,
+                link: '/chatbot/' + chatID,
                 lastUpdated: new Date(),
             });
             this.newChatName = '';

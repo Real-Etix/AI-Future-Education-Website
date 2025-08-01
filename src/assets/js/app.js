@@ -1,19 +1,17 @@
 import Sidebar from '@/components/Sidebar.vue';
+import { useRoute } from 'vue-router';
 export default {
     data() {
         return {
             userID: 1,
-            renderSidebar: false
+            renderSidebar: false,
+            route: useRoute()
         }
     },
     components: {
         Sidebar
     },
     methods: {
-        // Load sidebar
-        login() {
-            this.renderSidebar = true;
-        },
 
         // Rerender the sidebar to update the sidebar list
         forceRerender() {
@@ -21,6 +19,13 @@ export default {
             this.$nextTick(() => {
                 this.renderSidebar = true;
             });
+        }
+    },
+    computed: {
+        isOnSpecificPage: {
+            get() {
+                return this.route.name === 'index';
+            }
         }
     }
 }

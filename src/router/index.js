@@ -1,16 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import Landingpage from '../views/Landingpage.vue'
-import HomeContainer from '../views/HomeContainer.vue'
+// import HomeContainer from '../views/HomeContainer.vue'
 import Chatbot from '../views/Chatbot.vue'
-import ChatbotContainer from '../views/ChatbotContainer.vue'
+// import ChatbotContainer from '../views/ChatbotContainer.vue'
+import History from '../views/History.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      name:'landingpage',
+      name: 'index',
       component: Landingpage,
     },
     // {
@@ -29,7 +30,7 @@ const router = createRouter({
     //   component: ChatbotContainer,
     // },
     {
-      path:'/chatbot',
+      path:'/chatbot/:id/',
       name: 'chatbot',
       component: Chatbot,
     },
@@ -44,13 +45,13 @@ const router = createRouter({
     {
       path: '/history',
       name: 'history',
-      component: () => import('../views/History.vue'),
+      component: History,
     },
-    {
-      path: '/chat/:id/',
-      name: 'chat',
-      component: ChatbotContainer,
-    }
+    // {
+    //   path: '/chat/:id/',
+    //   name: 'chat',
+    //   component: ChatbotContainer,
+    // }
   ],
 })
 
