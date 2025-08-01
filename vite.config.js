@@ -8,7 +8,7 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/',
+  base: '/AI-Future-Education-Website/',
   build: { 
     cssCodeSplit: true,
     minify: false, // Added to stop compacting

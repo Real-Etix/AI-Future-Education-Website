@@ -8800,216 +8800,17 @@ function extractChangingRecords(to, from) {
   }
   return [leavingRecords, updatingRecords, enteringRecords];
 }
-const chatList = [
-  {
-    id: 0,
-    name: "測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試",
-    link: "/placeholder",
-    lastUpdated: new Date((/* @__PURE__ */ new Date()).getFullYear(), (/* @__PURE__ */ new Date()).getMonth(), (/* @__PURE__ */ new Date()).getDate() - 2)
-    // Temp
-  },
-  {
-    id: 1,
-    name: "Special character bdfghijklpqty",
-    link: "/placeholder",
-    lastUpdated: /* @__PURE__ */ new Date(19)
-    // Temp
-  },
-  {
-    id: 2,
-    name: "Placeholder 3",
-    link: "/placeholder",
-    lastUpdated: /* @__PURE__ */ new Date(18)
-    // Temp
-  },
-  {
-    id: 3,
-    name: "Placeholder 4",
-    link: "/placeholder",
-    lastUpdated: /* @__PURE__ */ new Date(17)
-    // Temp
-  },
-  {
-    id: 4,
-    name: "Placeholder 5",
-    link: "/placeholder",
-    lastUpdated: new Date((/* @__PURE__ */ new Date()).getFullYear(), (/* @__PURE__ */ new Date()).getMonth(), (/* @__PURE__ */ new Date()).getDate() - 1)
-    // Temp
-  },
-  {
-    id: 5,
-    name: "Placeholder 6",
-    link: "/placeholder",
-    lastUpdated: /* @__PURE__ */ new Date()
-    // Temp
-  }
-];
-const _sfc_main$2 = {
-  props: ["head"],
-  data() {
-    return {
-      historyExpanded: false,
-      userMenuExpanded: false,
-      id: 0,
-      // Temp
-      newChatName: "",
-      chatList
-    };
-  },
-  methods: {
-    toggleHistoryExpanded() {
-      this.historyExpanded = !this.historyExpanded;
-    },
-    toggleUserMenuExpanded() {
-      this.userMenuExpanded = !this.userMenuExpanded;
-    },
-    handleEnterPress() {
-      if (!this.newChatName) {
-        return;
-      }
-      this.chatList.push({
-        id: 0,
-        name: this.newChatName,
-        link: "./placeholder",
-        lastUpdated: /* @__PURE__ */ new Date()
-      });
-      this.newChatName = "";
-      this.id++;
-    }
-  },
-  computed: {
-    sortedChatList: {
-      get() {
-        return this.chatList.sort((a, b) => b.lastUpdated - a.lastUpdated);
-      }
-    }
-  }
-};
-const _imports_0 = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20261.76%20226.69'%3e%3cpath%20d='M161.096.001l-30.225%2052.351L100.647.001H-.005l130.877%20226.688L261.749.001z'%20fill='%2341b883'/%3e%3cpath%20d='M161.096.001l-30.225%2052.351L100.647.001H52.346l78.526%20136.01L209.398.001z'%20fill='%2334495e'/%3e%3c/svg%3e";
-const _hoisted_1$2 = { class: "title" };
-const _hoisted_2$1 = { href: "#" };
-const _hoisted_3$1 = { class: "append-input" };
-const _hoisted_4$1 = { class: "main-menu" };
-const _hoisted_5$1 = { class: "chat-menu" };
-const _hoisted_6$1 = { class: "text" };
-const _hoisted_7$1 = { class: "main-menu" };
-const _hoisted_8$1 = { class: "user" };
-const _hoisted_9$1 = {
-  key: 0,
-  class: "user-menu"
-};
-const _hoisted_10$1 = { class: "user-menu-toggle" };
-function render$1(_ctx, _cache, $props, $setup, $data, $options) {
-  const _component_router_link = resolveComponent("router-link");
-  return openBlock(), createElementBlock("aside", null, [
-    createBaseVNode("div", _hoisted_1$2, [
-      _cache[3] || (_cache[3] = createBaseVNode("div", { class: "logo" }, [
-        createBaseVNode("img", { src: _imports_0 })
-      ], -1)),
-      createBaseVNode("a", _hoisted_2$1, toDisplayString(_ctx.head), 1)
-    ]),
-    createBaseVNode("div", _hoisted_3$1, [
-      withDirectives(createBaseVNode("input", {
-        id: "append-chat-name",
-        type: "text",
-        "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => _ctx.newChatName = $event),
-        placeholder: "創建會話",
-        onKeyup: _cache[1] || (_cache[1] = withKeys((...args) => _ctx.handleEnterPress && _ctx.handleEnterPress(...args), ["enter"]))
-      }, null, 544), [
-        [vModelText, _ctx.newChatName]
-      ])
-    ]),
-    createBaseVNode("div", _hoisted_4$1, [
-      createVNode(_component_router_link, {
-        class: "button",
-        to: "/"
-      }, {
-        default: withCtx(() => _cache[4] || (_cache[4] = [
-          createBaseVNode("span", { class: "material-symbols-outlined text-symbol" }, "home", -1),
-          createBaseVNode("span", { class: "text" }, "主頁", -1)
-        ])),
-        _: 1,
-        __: [4]
-      })
-    ]),
-    _cache[9] || (_cache[9] = createBaseVNode("div", { class: "menu-heading" }, [
-      createBaseVNode("span", { class: "material-symbols-outlined text-symbol" }, "schedule"),
-      createBaseVNode("span", { class: "text" }, "歷史對話")
-    ], -1)),
-    createBaseVNode("div", _hoisted_5$1, [
-      (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.sortedChatList, (chat, index) => {
-        return withDirectives((openBlock(), createBlock(_component_router_link, {
-          key: chat.id,
-          class: "button",
-          to: chat.link
-        }, {
-          default: withCtx(() => [
-            createBaseVNode("span", _hoisted_6$1, toDisplayString(chat.name), 1)
-          ]),
-          _: 2
-        }, 1032, ["to"])), [
-          [vShow, _ctx.historyExpanded || index < 3]
-        ]);
-      }), 128))
-    ]),
-    createBaseVNode("div", _hoisted_7$1, [
-      createVNode(_component_router_link, {
-        class: "button",
-        to: "/history"
-      }, {
-        default: withCtx(() => _cache[5] || (_cache[5] = [
-          createBaseVNode("span", { class: "material-symbols-outlined text-symbol" }, "expand", -1),
-          createBaseVNode("span", { class: "text" }, "查看全部", -1)
-        ])),
-        _: 1,
-        __: [5]
-      })
-    ]),
-    _cache[10] || (_cache[10] = createBaseVNode("div", { class: "flex" }, null, -1)),
-    createBaseVNode("div", _hoisted_8$1, [
-      _ctx.userMenuExpanded ? (openBlock(), createElementBlock("div", _hoisted_9$1, _cache[6] || (_cache[6] = [
-        createStaticVNode('<button class="button" data-v-5d7ce46f><span class="text" data-v-5d7ce46f>預留位置</span></button><button class="button" data-v-5d7ce46f><span class="material-symbols-outlined text-symbol" data-v-5d7ce46f>settings</span><span class="text" data-v-5d7ce46f>設定</span></button>', 2)
-      ]))) : createCommentVNode("", true),
-      createBaseVNode("div", _hoisted_10$1, [
-        createBaseVNode("button", {
-          class: "button",
-          onClick: _cache[2] || (_cache[2] = (...args) => _ctx.toggleUserMenuExpanded && _ctx.toggleUserMenuExpanded(...args))
-        }, [
-          _cache[7] || (_cache[7] = createBaseVNode("span", { class: "material-symbols-outlined text-symbol" }, "person", -1)),
-          _cache[8] || (_cache[8] = createBaseVNode("span", { class: "text" }, "用戶ID", -1)),
-          createBaseVNode("span", {
-            class: normalizeClass(["material-symbols-outlined", { expanded: _ctx.userMenuExpanded }])
-          }, "arrow_drop_up", 2)
-        ])
-      ])
-    ])
-  ]);
-}
-const _export_sfc = (sfc, props) => {
-  const target = sfc.__vccOpts || sfc;
-  for (const [key, val] of props) {
-    target[key] = val;
-  }
-  return target;
-};
-const Sidebar = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", render$1], ["__scopeId", "data-v-5d7ce46f"]]);
-const _hoisted_1$1 = { class: "main" };
-const _sfc_main$1 = {
+const _sfc_main$6 = {
   __name: "App",
   setup(__props) {
     return (_ctx, _cache) => {
-      return openBlock(), createElementBlock(Fragment, null, [
-        createVNode(Sidebar, { head: "XXChatBot" }),
-        createBaseVNode("div", _hoisted_1$1, [
-          createVNode(unref(RouterView))
-        ])
-      ], 64);
+      return openBlock(), createBlock(unref(RouterView));
     };
   }
 };
 const scriptRel = "modulepreload";
 const assetsURL = function(dep) {
-  return "/" + dep;
+  return "/AI-Future-Education-Website/" + dep;
 };
 const seen = {};
 const __vitePreload = function preload(baseModule, deps, importerUrl) {
@@ -9157,10 +8958,11 @@ const consultList = [
     link: "./placeholder"
   }
 ];
-const _sfc_main = {
+const _sfc_main$5 = {
   data() {
     return {
       isShowing: 0,
+      inputText: "",
       storyList,
       valueList,
       consultList
@@ -9169,55 +8971,83 @@ const _sfc_main = {
   methods: {
     changeShowing(idx) {
       this.isShowing = idx;
+    },
+    goToChat() {
+      if (this.inputText && this.inputText.trim()) {
+        this.$router.push({ name: "chatbotcontainer", query: { text: this.inputText.trim() } });
+      }
     }
   }
 };
-const _hoisted_1 = { class: "home-page" };
-const _hoisted_2 = { class: "category-select" };
-const _hoisted_3 = { class: "overlap" };
-const _hoisted_4 = { class: "button-inline" };
-const _hoisted_5 = {
+const _hoisted_1$5 = { class: "home-page" };
+const _hoisted_2$3 = { class: "main-input" };
+const _hoisted_3$3 = { class: "upload" };
+const _hoisted_4$3 = { class: "category-select" };
+const _hoisted_5$2 = { class: "overlap" };
+const _hoisted_6$2 = { class: "button-inline" };
+const _hoisted_7$2 = {
   key: 0,
   class: "item-select"
 };
-const _hoisted_6 = { class: "text" };
-const _hoisted_7 = { class: "img" };
-const _hoisted_8 = ["src"];
-const _hoisted_9 = {
+const _hoisted_8$2 = { class: "text" };
+const _hoisted_9$2 = { class: "img" };
+const _hoisted_10$2 = ["src"];
+const _hoisted_11$1 = {
   key: 1,
   class: "item-select"
 };
-const _hoisted_10 = { class: "text" };
-const _hoisted_11 = { class: "img" };
-const _hoisted_12 = ["src"];
-const _hoisted_13 = {
+const _hoisted_12$1 = { class: "text" };
+const _hoisted_13$1 = { class: "img" };
+const _hoisted_14 = ["src"];
+const _hoisted_15 = {
   key: 2,
   class: "item-select"
 };
-const _hoisted_14 = { class: "text" };
-const _hoisted_15 = { class: "img" };
-const _hoisted_16 = ["src"];
-function render(_ctx, _cache, $props, $setup, $data, $options) {
+const _hoisted_16 = { class: "text" };
+const _hoisted_17 = { class: "img" };
+const _hoisted_18 = ["src"];
+function render$3(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_router_link = resolveComponent("router-link");
-  return openBlock(), createElementBlock("main", _hoisted_1, [
-    _cache[4] || (_cache[4] = createStaticVNode('<div class="brand-title" data-v-7fd531f5><h1 data-v-7fd531f5>XXChatBot</h1></div><div class="main-input" data-v-7fd531f5><textarea id="main-input-area" rows="5" placeholder="今天想要學習什麼價值觀" data-v-7fd531f5></textarea><div class="upload" data-v-7fd531f5><button data-v-7fd531f5><span class="material-symbols-outlined" data-v-7fd531f5>arrow_upward</span></button></div></div>', 2)),
-    createBaseVNode("div", _hoisted_2, [
-      createBaseVNode("div", _hoisted_3, [
-        createBaseVNode("div", _hoisted_4, [
+  return openBlock(), createElementBlock("main", _hoisted_1$5, [
+    _cache[7] || (_cache[7] = createBaseVNode("div", { class: "brand-title" }, [
+      createBaseVNode("h1", null, "Vicuna")
+    ], -1)),
+    createBaseVNode("div", _hoisted_2$3, [
+      withDirectives(createBaseVNode("textarea", {
+        id: "main-input-area",
+        "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => _ctx.inputText = $event),
+        onKeyup: _cache[1] || (_cache[1] = withKeys((...args) => _ctx.goToChat && _ctx.goToChat(...args), ["enter"])),
+        rows: "5",
+        placeholder: "今天想要學習什麼價值觀"
+      }, null, 544), [
+        [vModelText, _ctx.inputText]
+      ]),
+      createBaseVNode("div", _hoisted_3$3, [
+        createBaseVNode("button", null, [
+          createBaseVNode("span", {
+            class: "material-symbols-outlined",
+            onClick: _cache[2] || (_cache[2] = (...args) => _ctx.goToChat && _ctx.goToChat(...args))
+          }, "arrow_upward")
+        ])
+      ])
+    ]),
+    createBaseVNode("div", _hoisted_4$3, [
+      createBaseVNode("div", _hoisted_5$2, [
+        createBaseVNode("div", _hoisted_6$2, [
           createBaseVNode("button", {
-            onClick: _cache[0] || (_cache[0] = ($event) => _ctx.changeShowing(0)),
+            onClick: _cache[3] || (_cache[3] = ($event) => _ctx.changeShowing(0)),
             class: normalizeClass({ "active": _ctx.isShowing === 0 })
           }, "故事推薦", 2),
           createBaseVNode("button", {
-            onClick: _cache[1] || (_cache[1] = ($event) => _ctx.changeShowing(1)),
+            onClick: _cache[4] || (_cache[4] = ($event) => _ctx.changeShowing(1)),
             class: normalizeClass({ "active": _ctx.isShowing === 1 })
           }, "價值觀學習", 2),
           createBaseVNode("button", {
-            onClick: _cache[2] || (_cache[2] = ($event) => _ctx.changeShowing(2)),
+            onClick: _cache[5] || (_cache[5] = ($event) => _ctx.changeShowing(2)),
             class: normalizeClass({ "active": _ctx.isShowing === 2 })
           }, "相關諮訊", 2)
         ]),
-        _cache[3] || (_cache[3] = createBaseVNode("div", { class: "toggle-expand" }, [
+        _cache[6] || (_cache[6] = createBaseVNode("div", { class: "toggle-expand" }, [
           createBaseVNode("span", { class: "material-symbols-outlined" }, "arrow_drop_down")
         ], -1))
       ])
@@ -9228,55 +9058,55 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       mode: "out-in"
     }, {
       default: withCtx(() => [
-        _ctx.isShowing == 0 ? (openBlock(), createElementBlock("div", _hoisted_5, [
+        _ctx.isShowing == 0 ? (openBlock(), createElementBlock("div", _hoisted_7$2, [
           (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.storyList, (story) => {
             return openBlock(), createBlock(_component_router_link, {
               class: "button",
               to: story.link
             }, {
               default: withCtx(() => [
-                createBaseVNode("label", _hoisted_6, toDisplayString(story.title), 1),
-                createBaseVNode("div", _hoisted_7, [
+                createBaseVNode("label", _hoisted_8$2, toDisplayString(story.title), 1),
+                createBaseVNode("div", _hoisted_9$2, [
                   story.img ? (openBlock(), createElementBlock("img", {
                     key: 0,
                     src: story.img
-                  }, null, 8, _hoisted_8)) : createCommentVNode("", true)
+                  }, null, 8, _hoisted_10$2)) : createCommentVNode("", true)
                 ])
               ]),
               _: 2
             }, 1032, ["to"]);
           }), 256))
-        ])) : _ctx.isShowing == 1 ? (openBlock(), createElementBlock("div", _hoisted_9, [
+        ])) : _ctx.isShowing == 1 ? (openBlock(), createElementBlock("div", _hoisted_11$1, [
           (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.valueList, (value) => {
             return openBlock(), createBlock(_component_router_link, {
               class: "button",
               to: value.link
             }, {
               default: withCtx(() => [
-                createBaseVNode("label", _hoisted_10, toDisplayString(value.title), 1),
-                createBaseVNode("div", _hoisted_11, [
+                createBaseVNode("label", _hoisted_12$1, toDisplayString(value.title), 1),
+                createBaseVNode("div", _hoisted_13$1, [
                   value.img ? (openBlock(), createElementBlock("img", {
                     key: 0,
                     src: value.img
-                  }, null, 8, _hoisted_12)) : createCommentVNode("", true)
+                  }, null, 8, _hoisted_14)) : createCommentVNode("", true)
                 ])
               ]),
               _: 2
             }, 1032, ["to"]);
           }), 256))
-        ])) : _ctx.isShowing == 2 ? (openBlock(), createElementBlock("div", _hoisted_13, [
+        ])) : _ctx.isShowing == 2 ? (openBlock(), createElementBlock("div", _hoisted_15, [
           (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.consultList, (consult) => {
             return openBlock(), createBlock(_component_router_link, {
               class: "button",
               to: consult.link
             }, {
               default: withCtx(() => [
-                createBaseVNode("label", _hoisted_14, toDisplayString(consult.title), 1),
-                createBaseVNode("div", _hoisted_15, [
+                createBaseVNode("label", _hoisted_16, toDisplayString(consult.title), 1),
+                createBaseVNode("div", _hoisted_17, [
                   consult.img ? (openBlock(), createElementBlock("img", {
                     key: 0,
                     src: consult.img
-                  }, null, 8, _hoisted_16)) : createCommentVNode("", true)
+                  }, null, 8, _hoisted_18)) : createCommentVNode("", true)
                 ])
               ]),
               _: 2
@@ -9288,14 +9118,413 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     })
   ]);
 }
-const Home = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", render], ["__scopeId", "data-v-7fd531f5"]]);
+const _export_sfc = (sfc, props) => {
+  const target = sfc.__vccOpts || sfc;
+  for (const [key, val] of props) {
+    target[key] = val;
+  }
+  return target;
+};
+const Home = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", render$3], ["__scopeId", "data-v-114274c4"]]);
+const _sfc_main$4 = {
+  name: "Homepage",
+  methods: {
+    goToChatbot() {
+      this.$router.push("/homecontainer");
+    }
+  }
+};
+const _hoisted_1$4 = { class: "homepage-root" };
+const _hoisted_2$2 = { class: "homepage-container" };
+const _hoisted_3$2 = { class: "homepage-main" };
+const _hoisted_4$2 = { class: "homepage-button" };
+function render$2(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("div", _hoisted_1$4, [
+    createBaseVNode("div", _hoisted_2$2, [
+      _cache[3] || (_cache[3] = createBaseVNode("div", { class: "homepage-header" }, [
+        createBaseVNode("hr")
+      ], -1)),
+      createBaseVNode("div", _hoisted_3$2, [
+        _cache[1] || (_cache[1] = createBaseVNode("div", { class: "homepage-logo-name" }, [
+          createBaseVNode("div", { class: "homepage-logo" }),
+          createBaseVNode("div", { class: "homepage-name" }, [
+            createBaseVNode("h1", null, "Vicuna")
+          ])
+        ], -1)),
+        _cache[2] || (_cache[2] = createBaseVNode("div", { class: "homepage-slogan" }, "你的價值觀學習引導者，點擊一下從這裡開始", -1)),
+        createBaseVNode("div", _hoisted_4$2, [
+          createBaseVNode("button", {
+            onClick: _cache[0] || (_cache[0] = (...args) => _ctx.goToChatbot && _ctx.goToChatbot(...args))
+          }, "ChatBot入口")
+        ])
+      ]),
+      _cache[4] || (_cache[4] = createBaseVNode("div", { class: "homepage-intro" }, null, -1)),
+      _cache[5] || (_cache[5] = createBaseVNode("div", { class: "homepage-footer" }, "ChatBot.XXXXXXXXXX.XXXXXX.", -1))
+    ])
+  ]);
+}
+const Landingpage = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", render$2], ["__scopeId", "data-v-1c4fd21c"]]);
+const chatList = [
+  {
+    id: 0,
+    name: "測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試測試",
+    link: "/placeholder",
+    lastUpdated: new Date((/* @__PURE__ */ new Date()).getFullYear(), (/* @__PURE__ */ new Date()).getMonth(), (/* @__PURE__ */ new Date()).getDate() - 2)
+    // Temp
+  },
+  {
+    id: 1,
+    name: "Special character bdfghijklpqty",
+    link: "/placeholder",
+    lastUpdated: /* @__PURE__ */ new Date(19)
+    // Temp
+  },
+  {
+    id: 2,
+    name: "Placeholder 3",
+    link: "/placeholder",
+    lastUpdated: /* @__PURE__ */ new Date(18)
+    // Temp
+  },
+  {
+    id: 3,
+    name: "Placeholder 4",
+    link: "/placeholder",
+    lastUpdated: /* @__PURE__ */ new Date(17)
+    // Temp
+  },
+  {
+    id: 4,
+    name: "Placeholder 5",
+    link: "/placeholder",
+    lastUpdated: new Date((/* @__PURE__ */ new Date()).getFullYear(), (/* @__PURE__ */ new Date()).getMonth(), (/* @__PURE__ */ new Date()).getDate() - 1)
+    // Temp
+  },
+  {
+    id: 5,
+    name: "Placeholder 6",
+    link: "/placeholder",
+    lastUpdated: /* @__PURE__ */ new Date()
+    // Temp
+  }
+];
+const _sfc_main$3 = {
+  props: ["head"],
+  data() {
+    return {
+      historyExpanded: false,
+      userMenuExpanded: false,
+      id: 0,
+      // Temp
+      newChatName: "",
+      chatList
+    };
+  },
+  methods: {
+    toggleHistoryExpanded() {
+      this.historyExpanded = !this.historyExpanded;
+    },
+    toggleUserMenuExpanded() {
+      this.userMenuExpanded = !this.userMenuExpanded;
+    },
+    handleEnterPress() {
+      if (!this.newChatName) {
+        return;
+      }
+      this.chatList.push({
+        id: 0,
+        name: this.newChatName,
+        link: "./placeholder",
+        lastUpdated: /* @__PURE__ */ new Date()
+      });
+      this.newChatName = "";
+      this.id++;
+    }
+  },
+  computed: {
+    sortedChatList: {
+      get() {
+        return this.chatList.sort((a, b) => b.lastUpdated - a.lastUpdated);
+      }
+    }
+  }
+};
+const _imports_0 = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20261.76%20226.69'%3e%3cpath%20d='M161.096.001l-30.225%2052.351L100.647.001H-.005l130.877%20226.688L261.749.001z'%20fill='%2341b883'/%3e%3cpath%20d='M161.096.001l-30.225%2052.351L100.647.001H52.346l78.526%20136.01L209.398.001z'%20fill='%2334495e'/%3e%3c/svg%3e";
+const _hoisted_1$3 = { class: "title" };
+const _hoisted_2$1 = { href: "#" };
+const _hoisted_3$1 = { class: "append-input" };
+const _hoisted_4$1 = { class: "main-menu" };
+const _hoisted_5$1 = { class: "chat-menu" };
+const _hoisted_6$1 = { class: "text" };
+const _hoisted_7$1 = { class: "main-menu" };
+const _hoisted_8$1 = { class: "user" };
+const _hoisted_9$1 = {
+  key: 0,
+  class: "user-menu"
+};
+const _hoisted_10$1 = { class: "user-menu-toggle" };
+function render$1(_ctx, _cache, $props, $setup, $data, $options) {
+  const _component_router_link = resolveComponent("router-link");
+  return openBlock(), createElementBlock("aside", null, [
+    createBaseVNode("div", _hoisted_1$3, [
+      _cache[3] || (_cache[3] = createBaseVNode("div", { class: "logo" }, [
+        createBaseVNode("img", { src: _imports_0 })
+      ], -1)),
+      createBaseVNode("a", _hoisted_2$1, toDisplayString(_ctx.head), 1)
+    ]),
+    createBaseVNode("div", _hoisted_3$1, [
+      withDirectives(createBaseVNode("input", {
+        id: "append-chat-name",
+        type: "text",
+        "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => _ctx.newChatName = $event),
+        placeholder: "創建會話",
+        onKeyup: _cache[1] || (_cache[1] = withKeys((...args) => _ctx.handleEnterPress && _ctx.handleEnterPress(...args), ["enter"]))
+      }, null, 544), [
+        [vModelText, _ctx.newChatName]
+      ])
+    ]),
+    createBaseVNode("div", _hoisted_4$1, [
+      createVNode(_component_router_link, {
+        class: "button",
+        to: "/"
+      }, {
+        default: withCtx(() => _cache[4] || (_cache[4] = [
+          createBaseVNode("span", { class: "material-symbols-outlined text-symbol" }, "home", -1),
+          createBaseVNode("span", { class: "text" }, "主頁", -1)
+        ])),
+        _: 1,
+        __: [4]
+      })
+    ]),
+    _cache[9] || (_cache[9] = createBaseVNode("div", { class: "menu-heading" }, [
+      createBaseVNode("span", { class: "material-symbols-outlined text-symbol" }, "schedule"),
+      createBaseVNode("span", { class: "text" }, "歷史對話")
+    ], -1)),
+    createBaseVNode("div", _hoisted_5$1, [
+      (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.sortedChatList, (chat, index) => {
+        return withDirectives((openBlock(), createBlock(_component_router_link, {
+          key: chat.id,
+          class: "button",
+          to: chat.link
+        }, {
+          default: withCtx(() => [
+            createBaseVNode("span", _hoisted_6$1, toDisplayString(chat.name), 1)
+          ]),
+          _: 2
+        }, 1032, ["to"])), [
+          [vShow, _ctx.historyExpanded || index < 3]
+        ]);
+      }), 128))
+    ]),
+    createBaseVNode("div", _hoisted_7$1, [
+      createVNode(_component_router_link, {
+        class: "button",
+        to: "/history"
+      }, {
+        default: withCtx(() => _cache[5] || (_cache[5] = [
+          createBaseVNode("span", { class: "material-symbols-outlined text-symbol" }, "expand", -1),
+          createBaseVNode("span", { class: "text" }, "查看全部", -1)
+        ])),
+        _: 1,
+        __: [5]
+      })
+    ]),
+    _cache[10] || (_cache[10] = createBaseVNode("div", { class: "flex" }, null, -1)),
+    createBaseVNode("div", _hoisted_8$1, [
+      _ctx.userMenuExpanded ? (openBlock(), createElementBlock("div", _hoisted_9$1, _cache[6] || (_cache[6] = [
+        createStaticVNode('<button class="button" data-v-5d7ce46f><span class="text" data-v-5d7ce46f>預留位置</span></button><button class="button" data-v-5d7ce46f><span class="material-symbols-outlined text-symbol" data-v-5d7ce46f>settings</span><span class="text" data-v-5d7ce46f>設定</span></button>', 2)
+      ]))) : createCommentVNode("", true),
+      createBaseVNode("div", _hoisted_10$1, [
+        createBaseVNode("button", {
+          class: "button",
+          onClick: _cache[2] || (_cache[2] = (...args) => _ctx.toggleUserMenuExpanded && _ctx.toggleUserMenuExpanded(...args))
+        }, [
+          _cache[7] || (_cache[7] = createBaseVNode("span", { class: "material-symbols-outlined text-symbol" }, "person", -1)),
+          _cache[8] || (_cache[8] = createBaseVNode("span", { class: "text" }, "用戶ID", -1)),
+          createBaseVNode("span", {
+            class: normalizeClass(["material-symbols-outlined", { expanded: _ctx.userMenuExpanded }])
+          }, "arrow_drop_up", 2)
+        ])
+      ])
+    ])
+  ]);
+}
+const Sidebar = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", render$1], ["__scopeId", "data-v-5d7ce46f"]]);
+const _hoisted_1$2 = { class: "main" };
+const _sfc_main$2 = {
+  __name: "HomeContainer",
+  setup(__props) {
+    return (_ctx, _cache) => {
+      return openBlock(), createElementBlock(Fragment, null, [
+        createVNode(Sidebar, { head: "Vicuna" }),
+        createBaseVNode("div", _hoisted_1$2, [
+          createVNode(Home)
+        ])
+      ], 64);
+    };
+  }
+};
+const _sfc_main$1 = {
+  components: {
+    Sidebar
+  },
+  data: () => ({
+    message: "",
+    messages: []
+  }),
+  /* this is the mounted function which is used to get the text from the home page and display it in the chatbot */
+  mounted() {
+    const text = this.$route.query.text;
+    if (text) {
+      this.messages.push({ text, author: "student" });
+    }
+  },
+  methods: {
+    /*
+    sendMessage function is used to send a message to the chatbot
+    and the message will be pushed to the messages array
+    and the message will be displayed in the chatbot
+    */
+    sendMessage() {
+      if (this.message && this.message.trim()) {
+        this.messages.push({
+          text: this.message,
+          author: "student"
+        });
+        this.message = "";
+      }
+    }
+  }
+};
+const _hoisted_1$1 = { class: "chat-content" };
+const _hoisted_2 = { class: "content-body" };
+const _hoisted_3 = { class: "teacher-message" };
+const _hoisted_4 = {
+  class: "svg-icon-teacher",
+  style: { "width": "5em", "height": "5em", "vertical-align": "middle", "fill": "currentColor", "overflow": "hidden" },
+  viewBox: "0 0 1024 1024",
+  version: "1.1",
+  xmlns: "http://www.w3.org/2000/svg"
+};
+const _hoisted_5 = { class: "student-message" };
+const _hoisted_6 = {
+  class: "svg-icon-student",
+  style: { "width": "5em", "height": "5em", "vertical-align": "middle", "fill": "currentColor", "overflow": "hidden" },
+  viewBox: "0 0 1024 1024",
+  version: "1.1",
+  xmlns: "http://www.w3.org/2000/svg"
+};
+const _hoisted_7 = { class: "student-message-list" };
+const _hoisted_8 = { class: "student-text" };
+const _hoisted_9 = {
+  class: "svg-icon-student",
+  style: { "width": "5em", "height": "5em", "vertical-align": "middle", "fill": "currentColor", "overflow": "hidden" },
+  viewBox: "0 0 1024 1024",
+  version: "1.1",
+  xmlns: "http://www.w3.org/2000/svg"
+};
+const _hoisted_10 = { class: "content-footer" };
+const _hoisted_11 = {
+  action: "#",
+  class: "chat-form"
+};
+const _hoisted_12 = { class: "chat-controls" };
+const _hoisted_13 = { class: "send-button" };
+function render(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("div", _hoisted_1$1, [
+    _cache[8] || (_cache[8] = createBaseVNode("div", { class: "content-header" }, "新建會話", -1)),
+    createBaseVNode("div", _hoisted_2, [
+      createBaseVNode("div", _hoisted_3, [
+        (openBlock(), createElementBlock("svg", _hoisted_4, _cache[3] || (_cache[3] = [
+          createStaticVNode('<path d="M777.64 965.502H246.361c-5.523 0-10-4.478-10-10 0-20.864 2.346-41.624 6.98-61.838-54.104-23.893-82.626-56.116-82.626-93.524V377.073c0-85.095 33.138-165.096 93.308-225.267 60.171-60.171 140.172-93.308 225.266-93.308h65.422c85.095 0 165.096 33.137 225.266 93.308 60.172 60.171 93.31 140.172 93.31 225.267V800.14c0 37.408-28.522 69.633-82.626 93.523a276.787 276.787 0 0 1 6.979 61.839c0 5.522-4.478 10-10 10z m-521.085-20h510.892a256.28 256.28 0 0 0-8.201-55.175 10 10 0 0 1 5.893-11.8c64.59-26.367 78.147-57.182 78.147-78.389V377.073c0-79.752-31.058-154.731-87.45-211.125-56.394-56.393-131.372-87.45-211.124-87.45H479.29c-79.752 0-154.729 31.057-211.124 87.45-56.394 56.394-87.451 131.372-87.451 211.125V800.14c0 21.207 13.558 52.021 78.148 78.39a9.999 9.999 0 0 1 5.892 11.8 256.055 256.055 0 0 0-8.2 55.172z" fill="#322B2C" data-v-aefe0280></path><path d="M512 932.954c-89.93 0-173.819-11.438-236.213-32.209-72.01-23.974-110.072-58.761-110.072-100.605V377.073c0-83.759 32.617-162.504 91.844-221.731 59.226-59.227 137.972-91.844 221.73-91.844h65.422c83.759 0 162.504 32.617 221.73 91.844s91.844 137.972 91.844 221.731V800.14c0 41.846-38.062 76.634-110.072 100.605-62.394 20.771-146.282 32.209-236.213 32.209z" fill="#322B2C" data-v-aefe0280></path><path d="M544.711 68.498c170.421 0 308.574 138.153 308.574 308.575V800.14c0 85.21-170.644 127.815-341.285 127.815-170.643 0-341.286-42.605-341.286-127.815V377.073c0-170.421 138.153-308.575 308.574-308.575h65.423m0-10h-65.422c-43.003 0-84.725 8.424-124.006 25.039-37.938 16.046-72.006 39.015-101.26 68.269-29.254 29.254-52.223 63.323-68.269 101.26-16.615 39.282-25.039 81.004-25.039 124.007V800.14c0 44.203 39.245 80.633 113.493 105.351 62.89 20.936 147.339 32.465 237.792 32.465s174.902-11.529 237.792-32.465c74.248-24.719 113.493-61.146 113.493-105.351V377.073c0-43.003-8.424-84.725-25.039-124.007-16.046-37.937-39.016-72.005-68.271-101.26-29.254-29.254-63.321-52.223-101.259-68.269-39.28-16.615-81.002-25.039-124.005-25.039z" fill="#322B2C" data-v-aefe0280></path><path d="M777.64 955.502H246.361c0-146.707 118.93-265.639 265.638-265.639 146.709 0 265.641 118.932 265.641 265.639z" fill="#F7BE95" data-v-aefe0280></path><path d="M506.185 955.502l-101.293-222.67c41.675-27.177 47.83-42.969 101.293-42.969 53.462 0 71.249 15.794 112.924 42.969l-112.924 222.67z" fill="#F4D490" data-v-aefe0280></path><path d="M755.152 534.349v-45.106c-18.388 6.138-243.151-25.966-243.151-127.942 0 101.977-224.767 134.08-243.153 127.941v45.107c-32.649 0-59.116 26.469-59.116 59.116 0 32.649 26.467 59.118 59.116 59.118a59.44 59.44 0 0 0 8.947-0.677c25.091 67.721 100.121 116.872 188.784 116.872h90.843c88.662 0 163.691-49.151 188.782-116.872 2.92 0.442 5.907 0.677 8.948 0.677 32.649 0 59.115-26.469 59.115-59.118 0.003-32.649-26.464-59.116-59.115-59.116z" fill="#F9E5E5" data-v-aefe0280></path><path d="M396.898 514.816c-28.918 0-53.301 19.778-60.341 46.52-11.564-3.081-14.036-11.489-14.036-25.104h-14.538c0 14.95 3.082 34.084 26.559 39.489-0.011 0.496 14.501 1.488 14.501 1.488 0-26.387 21.468-47.854 47.854-47.854 26.388 0 47.855 21.469 47.855 47.854h14.539c0.001-34.402-27.989-62.393-62.393-62.393zM622.918 514.816c28.919 0 53.301 19.778 60.342 46.52 11.564-3.081 14.035-11.489 14.035-25.104h14.539c0 14.951-3.082 34.084-26.561 39.489 0.013 0.496-14.499 1.488-14.499 1.488 0-26.387-21.47-47.854-47.856-47.854-26.386 0-47.854 21.469-47.854 47.854h-14.539c0-34.402 27.991-62.393 62.393-62.393zM512 702.686c-34.405 0-62.396-27.99-62.396-62.395h14.539c0 26.388 21.47 47.854 47.857 47.854s47.856-21.468 47.856-47.854h14.538c0.002 34.403-27.989 62.395-62.394 62.395z" fill="#322B2C" data-v-aefe0280></path>', 7)
+        ]))),
+        _cache[4] || (_cache[4] = createBaseVNode("p", { class: "teacher-text" }, "嘿，同學！歡迎來到我們的價值觀學習網站！今天你想探索哪個故事裏的智慧呢？是勇敢的木蘭，還是誠實的華府？快來告訴我吧！", -1))
+      ]),
+      createBaseVNode("div", _hoisted_5, [
+        _cache[6] || (_cache[6] = createBaseVNode("p", { class: "student-text" }, "我想聽木蘭從軍的故事，我之前在書上看到過。", -1)),
+        (openBlock(), createElementBlock("svg", _hoisted_6, _cache[5] || (_cache[5] = [
+          createStaticVNode('<path d="M777.659 963.501H246.363c-5.523 0-10-4.478-10-10 0-62.313 20.887-121.591 58.092-169.33-18.873 12.188-41.297 19.174-65.132 19.174-66.167 0-119.999-53.832-119.999-120 0-27.72 9.677-54.76 27.247-76.139 15.251-18.558 35.807-32.147 58.63-38.929l-34.329-191.44a10.046 10.046 0 0 1-0.157-1.765c0-85.095 33.138-165.096 93.308-225.266 60.171-60.17 140.172-93.308 225.266-93.308h65.422c85.095 0 165.096 33.138 225.266 93.308 60.171 60.17 93.309 140.171 93.309 225.266 0 0.592-0.053 1.183-0.157 1.765l-34.562 192.742c48.565 16.26 81.731 61.779 81.732 113.766 0 66.168-53.832 120-120.001 120-20.595 0-40.109-5.188-57.191-14.429a275.089 275.089 0 0 1 19.412 29.856c22.871 40.74 35.01 87.088 35.12 134.079a10 10 0 0 1 0.021 0.649c-0.001 5.523-4.477 10.001-10.001 10.001z m-521.102-20h510.888c-1.58-40.345-12.688-79.887-32.365-114.938-20.657-36.796-50.415-68.23-86.057-90.904a9.999 9.999 0 0 1-3.623-12.816l0.69-1.418a10 10 0 0 1 4.374-9.134 254.485 254.485 0 0 0 24.949-19.182 10 10 0 0 1 16.422 5.792c8.454 47.771 49.863 82.444 98.463 82.444 55.141 0 100.001-44.86 100.001-100-0.001-45.948-31.086-85.834-75.593-96.996a9.998 9.998 0 0 1-7.41-11.464l35.988-200.695c-0.227-79.425-31.263-154.055-87.449-210.241-56.394-56.393-131.372-87.45-211.124-87.45h-65.422c-79.752 0-154.731 31.057-211.124 87.45-56.187 56.187-87.222 130.817-87.449 210.242l35.814 199.725a10 10 0 0 1-7.795 11.553c-46.015 9.627-79.412 50.791-79.412 97.877 0 55.14 44.859 100 99.999 100 48.3 0 89.664-34.423 98.354-81.851a10 10 0 0 1 16.383-5.757 254.659 254.659 0 0 0 25.441 19.371 10 10 0 0 1 4.094 10.996l0.738 1.513a10.002 10.002 0 0 1-3.459 12.718c-68.911 45.717-111.133 121.106-114.316 203.165z m86.765-222.561a119.188 119.188 0 0 1-10.324 22.947 278.395 278.395 0 0 1 19.646-15.299 10.064 10.064 0 0 1-0.276-0.98 273.509 273.509 0 0 1-9.046-6.668z m324.831 5.404a275.545 275.545 0 0 1 14.915 11.036 119.209 119.209 0 0 1-6.95-16.974 275.062 275.062 0 0 1-7.965 5.938z" fill="#322B2C" data-v-aefe0280></path><path d="M790.298 683.346m-110 0a110 110 0 1 0 220 0 110 110 0 1 0-220 0Z" fill="#322B2C" data-v-aefe0280></path><path d="M229.323 683.346m-110 0a110 110 0 1 0 220 0 110 110 0 1 0-220 0Z" fill="#322B2C" data-v-aefe0280></path><path d="M813.285 598.14H210.714l-40-223.066c0-170.421 138.153-308.574 308.574-308.574h65.422c170.421 0 308.574 138.153 308.574 308.574L813.285 598.14z" fill="#322B2C" data-v-aefe0280></path><path d="M777.64 953.502H246.361c0-146.707 118.93-265.639 265.638-265.639 146.709 0 265.641 118.932 265.641 265.639z" fill="#F0BA93" data-v-aefe0280></path><path d="M365.343 732.003l77.909 159.721 95.567-162.894c-22.851-15.881-42.67-29.965-61.585-38.702-40.97 5.356-78.998 20.052-111.891 41.875z" fill="#F9D994" data-v-aefe0280></path><path d="M546.581 690.103c-21.55 9.515-43.803 26.032-69.392 43.815l95.564 162.896 81.635-167.594c-31.947-20.324-68.529-34.011-107.807-39.117z" fill="#EECF8D" data-v-aefe0280></path><path d="M770.375 534.519a266.919 266.919 0 0 0 1.609-23.433c-2.44 0.072-4.889 0.119-7.347 0.119-129.646 0-235.79-70.583-244.686-197.971-8.895 127.388-115.037 197.971-244.686 197.971-9.655 0-19.174-0.576-28.538-1.662 0.168 8.996 0.792 17.881 1.841 26.635-22.642 8.134-38.839 29.788-38.839 55.23 0 32.404 26.271 58.676 58.676 58.676a58.558 58.558 0 0 0 19.915-3.473c46.739 72.617 128.278 120.716 221.056 120.716 93.554 0 175.673-48.912 222.215-122.55a58.472 58.472 0 0 0 24.378 5.307c32.406 0 58.677-26.271 58.677-58.676 0-27.435-18.83-50.468-44.271-56.889z" fill="#F9E5E5" data-v-aefe0280></path><path d="M512 719.386c-30.215 0-54.796-24.581-54.796-54.795h10c0 24.7 20.096 44.795 44.796 44.795s44.796-20.095 44.796-44.795h10c0 30.214-24.581 54.795-54.796 54.795zM396 523.333c-14.154 0-26.642 7.118-34.092 17.967a44.5 44.5 0 0 1-12.059-17.852l-9.392 3.433a54.458 54.458 0 0 0 16.731 23.536 41.234 41.234 0 0 0-2.523 14.249C354.666 587.494 373.172 606 396 606s41.333-18.506 41.333-41.334c0-22.827-18.506-41.333-41.333-41.333zM624.688 524.333c14.153 0 26.643 7.118 34.092 17.967a44.49 44.49 0 0 0 12.059-17.852l9.393 3.433a54.458 54.458 0 0 1-16.731 23.536 41.257 41.257 0 0 1 2.523 14.249c0 22.828-18.507 41.334-41.334 41.334-22.828 0-41.334-18.506-41.334-41.334-0.002-22.827 18.502-41.333 41.332-41.333z" fill="#322B2C" data-v-aefe0280></path><path d="M390.003 638.213c0 5.848-3.781 10.586-8.446 10.586H324.45c-4.665 0-8.446-4.738-8.446-10.586 0-5.846 3.781-10.586 8.446-10.586h57.107c4.665 0 8.446 4.74 8.446 10.586zM703.134 634.117c0 5.848-3.782 10.586-8.446 10.586H637.58c-4.664 0-8.446-4.738-8.446-10.586 0-5.846 3.782-10.586 8.446-10.586h57.107c4.665 0 8.447 4.74 8.447 10.586z" fill="#F3A089" data-v-aefe0280></path>', 10)
+        ])))
+      ]),
+      createBaseVNode("ul", _hoisted_7, [
+        (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.messages, (message, index) => {
+          return openBlock(), createElementBlock("li", {
+            class: "student-message-item",
+            key: index
+          }, [
+            createBaseVNode("p", _hoisted_8, toDisplayString(message.text), 1),
+            (openBlock(), createElementBlock("svg", _hoisted_9, _cache[7] || (_cache[7] = [
+              createStaticVNode('<path d="M777.659 963.501H246.363c-5.523 0-10-4.478-10-10 0-62.313 20.887-121.591 58.092-169.33-18.873 12.188-41.297 19.174-65.132 19.174-66.167 0-119.999-53.832-119.999-120 0-27.72 9.677-54.76 27.247-76.139 15.251-18.558 35.807-32.147 58.63-38.929l-34.329-191.44a10.046 10.046 0 0 1-0.157-1.765c0-85.095 33.138-165.096 93.308-225.266 60.171-60.17 140.172-93.308 225.266-93.308h65.422c85.095 0 165.096 33.138 225.266 93.308 60.171 60.17 93.309 140.171 93.309 225.266 0 0.592-0.053 1.183-0.157 1.765l-34.562 192.742c48.565 16.26 81.731 61.779 81.732 113.766 0 66.168-53.832 120-120.001 120-20.595 0-40.109-5.188-57.191-14.429a275.089 275.089 0 0 1 19.412 29.856c22.871 40.74 35.01 87.088 35.12 134.079a10 10 0 0 1 0.021 0.649c-0.001 5.523-4.477 10.001-10.001 10.001z m-521.102-20h510.888c-1.58-40.345-12.688-79.887-32.365-114.938-20.657-36.796-50.415-68.23-86.057-90.904a9.999 9.999 0 0 1-3.623-12.816l0.69-1.418a10 10 0 0 1 4.374-9.134 254.485 254.485 0 0 0 24.949-19.182 10 10 0 0 1 16.422 5.792c8.454 47.771 49.863 82.444 98.463 82.444 55.141 0 100.001-44.86 100.001-100-0.001-45.948-31.086-85.834-75.593-96.996a9.998 9.998 0 0 1-7.41-11.464l35.988-200.695c-0.227-79.425-31.263-154.055-87.449-210.241-56.394-56.393-131.372-87.45-211.124-87.45h-65.422c-79.752 0-154.731 31.057-211.124 87.45-56.187 56.187-87.222 130.817-87.449 210.242l35.814 199.725a10 10 0 0 1-7.795 11.553c-46.015 9.627-79.412 50.791-79.412 97.877 0 55.14 44.859 100 99.999 100 48.3 0 89.664-34.423 98.354-81.851a10 10 0 0 1 16.383-5.757 254.659 254.659 0 0 0 25.441 19.371 10 10 0 0 1 4.094 10.996l0.738 1.513a10.002 10.002 0 0 1-3.459 12.718c-68.911 45.717-111.133 121.106-114.316 203.165z m86.765-222.561a119.188 119.188 0 0 1-10.324 22.947 278.395 278.395 0 0 1 19.646-15.299 10.064 10.064 0 0 1-0.276-0.98 273.509 273.509 0 0 1-9.046-6.668z m324.831 5.404a275.545 275.545 0 0 1 14.915 11.036 119.209 119.209 0 0 1-6.95-16.974 275.062 275.062 0 0 1-7.965 5.938z" fill="#322B2C" data-v-aefe0280></path><path d="M790.298 683.346m-110 0a110 110 0 1 0 220 0 110 110 0 1 0-220 0Z" fill="#322B2C" data-v-aefe0280></path><path d="M229.323 683.346m-110 0a110 110 0 1 0 220 0 110 110 0 1 0-220 0Z" fill="#322B2C" data-v-aefe0280></path><path d="M813.285 598.14H210.714l-40-223.066c0-170.421 138.153-308.574 308.574-308.574h65.422c170.421 0 308.574 138.153 308.574 308.574L813.285 598.14z" fill="#322B2C" data-v-aefe0280></path><path d="M777.64 953.502H246.361c0-146.707 118.93-265.639 265.638-265.639 146.709 0 265.641 118.932 265.641 265.639z" fill="#F0BA93" data-v-aefe0280></path><path d="M365.343 732.003l77.909 159.721 95.567-162.894c-22.851-15.881-42.67-29.965-61.585-38.702-40.97 5.356-78.998 20.052-111.891 41.875z" fill="#F9D994" data-v-aefe0280></path><path d="M546.581 690.103c-21.55 9.515-43.803 26.032-69.392 43.815l95.564 162.896 81.635-167.594c-31.947-20.324-68.529-34.011-107.807-39.117z" fill="#EECF8D" data-v-aefe0280></path><path d="M770.375 534.519a266.919 266.919 0 0 0 1.609-23.433c-2.44 0.072-4.889 0.119-7.347 0.119-129.646 0-235.79-70.583-244.686-197.971-8.895 127.388-115.037 197.971-244.686 197.971-9.655 0-19.174-0.576-28.538-1.662 0.168 8.996 0.792 17.881 1.841 26.635-22.642 8.134-38.839 29.788-38.839 55.23 0 32.404 26.271 58.676 58.676 58.676a58.558 58.558 0 0 0 19.915-3.473c46.739 72.617 128.278 120.716 221.056 120.716 93.554 0 175.673-48.912 222.215-122.55a58.472 58.472 0 0 0 24.378 5.307c32.406 0 58.677-26.271 58.677-58.676 0-27.435-18.83-50.468-44.271-56.889z" fill="#F9E5E5" data-v-aefe0280></path><path d="M512 719.386c-30.215 0-54.796-24.581-54.796-54.795h10c0 24.7 20.096 44.795 44.796 44.795s44.796-20.095 44.796-44.795h10c0 30.214-24.581 54.795-54.796 54.795zM396 523.333c-14.154 0-26.642 7.118-34.092 17.967a44.5 44.5 0 0 1-12.059-17.852l-9.392 3.433a54.458 54.458 0 0 0 16.731 23.536 41.234 41.234 0 0 0-2.523 14.249C354.666 587.494 373.172 606 396 606s41.333-18.506 41.333-41.334c0-22.827-18.506-41.333-41.333-41.333zM624.688 524.333c14.153 0 26.643 7.118 34.092 17.967a44.49 44.49 0 0 0 12.059-17.852l9.393 3.433a54.458 54.458 0 0 1-16.731 23.536 41.257 41.257 0 0 1 2.523 14.249c0 22.828-18.507 41.334-41.334 41.334-22.828 0-41.334-18.506-41.334-41.334-0.002-22.827 18.502-41.333 41.332-41.333z" fill="#322B2C" data-v-aefe0280></path><path d="M390.003 638.213c0 5.848-3.781 10.586-8.446 10.586H324.45c-4.665 0-8.446-4.738-8.446-10.586 0-5.846 3.781-10.586 8.446-10.586h57.107c4.665 0 8.446 4.74 8.446 10.586zM703.134 634.117c0 5.848-3.782 10.586-8.446 10.586H637.58c-4.664 0-8.446-4.738-8.446-10.586 0-5.846 3.782-10.586 8.446-10.586h57.107c4.665 0 8.447 4.74 8.447 10.586z" fill="#F3A089" data-v-aefe0280></path>', 10)
+            ])))
+          ]);
+        }), 128))
+      ])
+    ]),
+    createBaseVNode("div", _hoisted_10, [
+      createBaseVNode("form", _hoisted_11, [
+        withDirectives(createBaseVNode("textarea", {
+          placeholder: "發送消息......",
+          class: "message-input",
+          type: "text",
+          "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => _ctx.message = $event),
+          onKeyup: _cache[1] || (_cache[1] = withKeys((...args) => _ctx.sendMessage && _ctx.sendMessage(...args), ["enter"]))
+        }, null, 544), [
+          [vModelText, _ctx.message]
+        ]),
+        createBaseVNode("div", _hoisted_12, [
+          createBaseVNode("button", _hoisted_13, [
+            createBaseVNode("span", {
+              class: "material-symbols-outlined",
+              onClick: _cache[2] || (_cache[2] = (...args) => _ctx.sendMessage && _ctx.sendMessage(...args))
+            }, "arrow_upward")
+          ])
+        ])
+      ])
+    ])
+  ]);
+}
+const Chatbot = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", render], ["__scopeId", "data-v-aefe0280"]]);
+const _hoisted_1 = { class: "main" };
+const _sfc_main = {
+  __name: "ChatbotContainer",
+  setup(__props) {
+    return (_ctx, _cache) => {
+      return openBlock(), createElementBlock(Fragment, null, [
+        createVNode(Sidebar, { head: "Vicuna" }),
+        createBaseVNode("div", _hoisted_1, [
+          createVNode(Chatbot)
+        ])
+      ], 64);
+    };
+  }
+};
 const router = createRouter({
-  history: createWebHistory("/"),
+  history: createWebHistory("/AI-Future-Education-Website/"),
   routes: [
     {
       path: "/",
+      name: "landingpage",
+      component: Landingpage
+    },
+    {
+      path: "/homecontainer",
+      name: "homecontainer",
+      component: _sfc_main$2
+    },
+    {
+      path: "/home",
       name: "home",
       component: Home
+    },
+    {
+      path: "/chatbotcontainer",
+      name: "chatbotcontainer",
+      component: _sfc_main
+    },
+    {
+      path: "/chatbot",
+      name: "chatbot",
+      component: Chatbot
     },
     {
       path: "/placeholder",
@@ -9312,7 +9541,7 @@ const router = createRouter({
     }
   ]
 });
-const app = createApp(_sfc_main$1);
+const app = createApp(_sfc_main$6);
 app.use(router);
 app.mount("#app");
 export {
