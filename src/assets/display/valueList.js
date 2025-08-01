@@ -1,3 +1,4 @@
+import TemplateImage from '@/assets/static/template-pic.jpeg'
 const valueList = [
     {
         title: '承諾',
