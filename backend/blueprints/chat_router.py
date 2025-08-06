@@ -103,14 +103,14 @@ def routing_message(chat_id):
         question = get_question(chat_id)
         if question:
             automated_message = f'問題：{question}'
+            update_chat_status(chat_id, 0)
         else:
             answer = get_answer(chat_id)
             automated_message = f'答案：{answer}' if answer else ''
+            update_chat_status(chat_id, 1)
         creation_time = send_message(chat_id, automated_message, 0)
 
-        if exist_question_cache_record(chat_id):
-            update_chat_status(chat_id, 0)
-        else:
+        if not exist_question_cache_record(chat_id):
             update_chat_stage(chat_id, 4)
             update_chat_status(chat_id, 1)
 
@@ -128,7 +128,7 @@ def routing_message(chat_id):
         value = get_chat_value(chat_id)
         update_chat_stage(chat_id, 6)
 
-        automated_message = generate_scenario(message, value)
+        automated_message = f'''那我用一個類似的情景來考一考你吧！\n\n{generate_scenario(message, value)}'''
         creation_time = send_message(chat_id, automated_message, 0)
 
         update_chat_status(chat_id, 0)
