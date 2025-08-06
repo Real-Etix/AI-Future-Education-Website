@@ -7,6 +7,7 @@ import Chatbot from '../views/Chatbot.vue'
 import History from '../views/History.vue'
 
 const router = createRouter({
+  mode: 'history',
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
