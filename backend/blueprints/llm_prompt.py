@@ -17,24 +17,25 @@ def intent_classify(message) -> str:
 
     # Set the prompt to feed to LLM
     prompt = f'''\
-從以下對話分析使用者的最多一個意圖，不用解釋為什麼：
+你要從回答中分析使用者的意圖。意圖可能是
 - 承諾
-- 堅毅
+- 問候
+- 沒有
 
-使用者： 我想知道什麼是諾言。
-意圖： 承諾
+例子：
+使用者：我想知道什麼是諾言。
+意圖：承諾
+使用者：你是誰？
+意圖：問候
 
-使用者： 你是誰？
-意圖： 沒有
-
-使用者： {cleaned_message}
-意圖：\
-'''
+{cleaned_message}
+意圖：'''
     
     # Obtain output from LLM and polish the result  
     result = asyncio.run(llm_response(prompt))
-    polished_result = result[3:].strip()
-    return polished_result
+    modified_result = '意圖：' + result.strip()
+    intents = extract_chinese_between_chars(modified_result, '意圖：', '')
+    return intents[0] if intents else '沒有'
 
 def generate_new_story(value) -> str:
     '''
@@ -76,10 +77,13 @@ def generate_questions(story, value):
     answers = extract_chinese_between_chars(modified_result, '答案：', '')
     return questions, answers
 
-def generate_scenario(value) -> str:
+def generate_scenario(message, value) -> str:
     prompt = f'''\
 你是一名老師。請為學生制造一個關於{value}的情景題。\
 以學生為主角，問題需要問學生會怎樣做，假設學生可能會違反這個價值觀，限制一個段落和問題。
+情景題可以和以下類似：
+{message}
+
 """
 結構：
 情景題：．．．
