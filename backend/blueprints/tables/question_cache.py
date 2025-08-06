@@ -17,6 +17,9 @@ class QuestionCache(db.Model):
     question = db.Column(db.String(1024))
     answer = db.Column(db.String(1024))
 
+def exist_question_cache_record(chat_id):
+    return db.session.execute(select(QuestionCache.chat_id).where(QuestionCache.chat_id == chat_id)).first() is not None
+
 def store_question_answer_pairs(chat_id, questions, answers):
     '''
     Store the question-answer pairs into the cache to be used later in the chat.

@@ -25,12 +25,14 @@ class Chat(db.Model):
     '''
     Stage represents the different stages of the chat.
     0: Asking user what value or story to learn
-    1: Story shown
-    2: Questions generated and showing
-    3: Scenario
-    4: Scenario-Persuasion
-    5: Scenario-Feedback
-    6: Ended Conversation
+    1: Story
+    2: Generating questions and answer
+    3: Showing Questions 
+    4: Asking user about his similar scenario
+    5: Generating similar scenario
+    6: Scenario Response
+    7: Scenario Feedback
+    8: Ended Conversation
     '''
     stage = db.Column(db.Integer, nullable=False)
     last_updated = db.Column(db.String(30), nullable=False)
