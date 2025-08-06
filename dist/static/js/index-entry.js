@@ -5697,16 +5697,16 @@ function cloneVNode(vnode, extraProps, mergeRef = false, cloneTransition = false
   }
   return cloned;
 }
-function createTextVNode(text2 = " ", flag = 0) {
-  return createVNode(Text, null, text2, flag);
+function createTextVNode(text = " ", flag = 0) {
+  return createVNode(Text, null, text, flag);
 }
 function createStaticVNode(content, numberOfNodes) {
   const vnode = createVNode(Static, null, content);
   vnode.staticCount = numberOfNodes;
   return vnode;
 }
-function createCommentVNode(text2 = "", asBlock = false) {
-  return asBlock ? (openBlock(), createBlock(Comment, null, text2)) : createVNode(Comment, null, text2);
+function createCommentVNode(text = "", asBlock = false) {
+  return asBlock ? (openBlock(), createBlock(Comment, null, text)) : createVNode(Comment, null, text);
 }
 function normalizeVNode(child) {
   if (child == null || typeof child === "boolean") {
@@ -6143,13 +6143,13 @@ const nodeOps = {
     }
     return el;
   },
-  createText: (text2) => doc.createTextNode(text2),
-  createComment: (text2) => doc.createComment(text2),
-  setText: (node, text2) => {
-    node.nodeValue = text2;
+  createText: (text) => doc.createTextNode(text),
+  createComment: (text) => doc.createComment(text),
+  setText: (node, text) => {
+    node.nodeValue = text;
   },
-  setElementText: (el, text2) => {
-    el.textContent = text2;
+  setElementText: (el, text) => {
+    el.textContent = text;
   },
   parentNode: (node) => node.parentNode,
   nextSibling: (node) => node.nextSibling,
@@ -7162,30 +7162,30 @@ const ENC_CURLY_OPEN_RE = /%7B/g;
 const ENC_PIPE_RE = /%7C/g;
 const ENC_CURLY_CLOSE_RE = /%7D/g;
 const ENC_SPACE_RE = /%20/g;
-function commonEncode(text2) {
-  return encodeURI("" + text2).replace(ENC_PIPE_RE, "|").replace(ENC_BRACKET_OPEN_RE, "[").replace(ENC_BRACKET_CLOSE_RE, "]");
+function commonEncode(text) {
+  return encodeURI("" + text).replace(ENC_PIPE_RE, "|").replace(ENC_BRACKET_OPEN_RE, "[").replace(ENC_BRACKET_CLOSE_RE, "]");
 }
-function encodeHash(text2) {
-  return commonEncode(text2).replace(ENC_CURLY_OPEN_RE, "{").replace(ENC_CURLY_CLOSE_RE, "}").replace(ENC_CARET_RE, "^");
+function encodeHash(text) {
+  return commonEncode(text).replace(ENC_CURLY_OPEN_RE, "{").replace(ENC_CURLY_CLOSE_RE, "}").replace(ENC_CARET_RE, "^");
 }
-function encodeQueryValue(text2) {
-  return commonEncode(text2).replace(PLUS_RE, "%2B").replace(ENC_SPACE_RE, "+").replace(HASH_RE, "%23").replace(AMPERSAND_RE, "%26").replace(ENC_BACKTICK_RE, "`").replace(ENC_CURLY_OPEN_RE, "{").replace(ENC_CURLY_CLOSE_RE, "}").replace(ENC_CARET_RE, "^");
+function encodeQueryValue(text) {
+  return commonEncode(text).replace(PLUS_RE, "%2B").replace(ENC_SPACE_RE, "+").replace(HASH_RE, "%23").replace(AMPERSAND_RE, "%26").replace(ENC_BACKTICK_RE, "`").replace(ENC_CURLY_OPEN_RE, "{").replace(ENC_CURLY_CLOSE_RE, "}").replace(ENC_CARET_RE, "^");
 }
-function encodeQueryKey(text2) {
-  return encodeQueryValue(text2).replace(EQUAL_RE, "%3D");
+function encodeQueryKey(text) {
+  return encodeQueryValue(text).replace(EQUAL_RE, "%3D");
 }
-function encodePath(text2) {
-  return commonEncode(text2).replace(HASH_RE, "%23").replace(IM_RE, "%3F");
+function encodePath(text) {
+  return commonEncode(text).replace(HASH_RE, "%23").replace(IM_RE, "%3F");
 }
-function encodeParam(text2) {
-  return text2 == null ? "" : encodePath(text2).replace(SLASH_RE, "%2F");
+function encodeParam(text) {
+  return text == null ? "" : encodePath(text).replace(SLASH_RE, "%2F");
 }
-function decode(text2) {
+function decode(text) {
   try {
-    return decodeURIComponent("" + text2);
+    return decodeURIComponent("" + text);
   } catch (err) {
   }
-  return "" + text2;
+  return "" + text;
 }
 const TRAILING_SLASH_RE = /\/$/;
 const removeTrailingSlash = (path) => path.replace(TRAILING_SLASH_RE, "");
@@ -7666,8 +7666,8 @@ function tokensToParser(segments, extraOptions) {
           if (isArray(param) && !repeatable) {
             throw new Error(`Provided param "${value}" is an array but it is not repeatable (* or + modifiers)`);
           }
-          const text2 = isArray(param) ? param.join("/") : param;
-          if (!text2) {
+          const text = isArray(param) ? param.join("/") : param;
+          if (!text) {
             if (optional) {
               if (segment.length < 2) {
                 if (path.endsWith("/"))
@@ -7678,7 +7678,7 @@ function tokensToParser(segments, extraOptions) {
             } else
               throw new Error(`Missing required param "${value}"`);
           }
-          path += text2;
+          path += text;
         }
       }
     }
@@ -9206,8 +9206,7 @@ const _sfc_main$3 = {
         body: JSON.stringify({
           method: "main",
           userID: this.userID,
-          name: this.inputText,
-          message: this.inputText
+          name: this.inputText
         })
       }).then((response) => response.json()).then((result) => {
         if (result["chatID"]) {
@@ -9451,7 +9450,8 @@ const _sfc_main$1 = {
       this.status = result["status"];
     }).catch((error) => console.error("Error obtaining chat: ", error));
     if (this.$route.query.text) {
-      this.messages.push({ text, author: "student" });
+      this.message = this.$route.query.text;
+      await this.sendMessage();
     }
   },
   methods: {
@@ -9743,6 +9743,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 }
 const History = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", render], ["__scopeId", "data-v-adf4c5e4"]]);
 const router = createRouter({
+  mode: "history",
   history: createWebHistory("/AI-Future-Education-Website"),
   routes: [
     {
