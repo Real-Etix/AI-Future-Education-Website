@@ -37,6 +37,7 @@ export default {
           }));
         })
         .catch(error => console.error('Error obtaining chat: ', error));
+      this.scrollToBottom();
       }
     )
   },
@@ -64,6 +65,7 @@ export default {
       this.message = this.$route.query.text;
       await this.sendMessage();
     }
+    this.scrollToBottom();
   },
   methods: {
     /*
@@ -102,6 +104,7 @@ export default {
       })
       .catch(error => console.error('Error sending message: ', error));
       await this.loadingRemainingMessage()
+      this.scrollToBottom();
     },
 
     // If there are pending messages, we wait to get the messages from server.
@@ -121,8 +124,21 @@ export default {
           });
             this.status = result['status'];
         })
+        this.scrollToBottom();
       }
-    }
+    },
+    /*
+    scrollToBottom function is used to scroll the chat to the bottom
+    to show the latest message
+    */
+    scrollToBottom() {
+      this.$nextTick(() => {
+        const chatBody = document.querySelector('.content-body');
+        if (chatBody) {
+          chatBody.scrollTop = chatBody.scrollHeight;
+        }
+      });
+    },
   },
   computed: {
       // Messages that is sorted in ascending order by the creation time.
