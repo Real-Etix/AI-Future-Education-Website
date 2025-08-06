@@ -1,56 +1,135 @@
-# backend/blueprints/llm_wrapper.py
-
+import os, openai
 import asyncio
-from poe_api_wrapper import PoeApi
+import time
 
-# This is grabbed from cookie, which will spend the points from which account the cookies are made from
-# You can get some of these tokens (value) from F12 -> Applications -> Cookies in Windows
-# https://poe.com
-# ---- TODO ----
-tokens = { 
-    'p-b': '2voV9fwV39Qpwv39EZV99A%3D%3D', # cookie
-    'p-lat': 'poe-chan116-8888-gadmiwnuappsufahzjxs', # cookie (poe-tchannel-channel)
-    'formkey': '785c8e50c2021eb3dd9a222721a981c6', # generated when launch, but needed for passing challenge sometimes
-    'cf_clearance': 'JRFlAXglxNjYZhDAh_8j8VRoWmE6QoM.Nyqg2kXd7Ao-1753972180-1.2.1.1-OpTix.f7fw4219EwDiJFnDGh4pUvvEuLzNH2UIRajyK6GQn2uhun9vlTovQ4f8UgEZqB50v.XQ48VdNX.CjHRjFA_9OxnI.jrYmxAs1iknf9bFESVQPWIV0PLNbUP70Akup8viSwM0n5K6H8Eg1jVVdI1SrovaxHW48GDUPiSlb9s_6B111AY6kMtv9qL2LFmS0JmBptwiamflFed_lF1V6mKf_ety0YmyOysalPMdE' # cookie
-}
+from dotenv import load_dotenv
+load_dotenv()
 
-client = PoeApi(tokens=tokens)
-chat_code = None
-bot='capybara'
+client = openai.OpenAI(
+    api_key = os.getenv('POE_API_KEY'),   # Obtain this API from Poe and store it in .env file
+    base_url = 'https://api.poe.com/v1'
+)
+bot = 'GPT-4o-mini'
 
-async def collect_response(response):
-    '''
-    Joins the response in character form to a string.
-    '''
-    global chat_code
-    result = []
-    for chunk in response:
-        result.append(chunk['response'])
-    chat_code = chunk['chatCode']
-    message = ''.join(result)
-    return message
-
-async def llm_response(message):
+async def llm_response(prompt):
     '''
     Send message to and receive response from Poe chatbot. 
     '''
-    if chat_code:
-        response = await collect_response(client.send_message(bot=bot, message=message, chatCode=chat_code))
-    else:
-        response = await collect_response(client.send_message(bot=bot, message=message))
-    if chat_code:
-        client.chat_break(bot, chatCode=chat_code)
-    return response
+    messages = [{'role': 'user', 'content': prompt}]
+    response = client.chat.completions.create(
+        model="GPT-4o-mini", # or other models (Claude-Sonnet-4, Gemini-2.5-Pro, Llama-3.1-405B, Grok-4..)
+        messages = messages, # type: ignore
+    )
+    return response.choices[0].message.content if response.choices[0].message.content else ''
+
+
+
 
 
 # This is for testing purposes to see if the prompt work properly.
 if __name__ == '__main__':
-    prompts = ['你好嗎？', '今日幾號？','作一個關於承諾的故事，故事要二百字內。']
-    for prompt in prompts:
-        result = asyncio.run(llm_response(prompt))
-        print([result])
-    if chat_code:
-        client.delete_chat(bot, chatCode=chat_code)
+    time1 = 0.0
+    time2 = 0.0
+    test_random_message = ['Test', "你好嗎？", "你在做什麼?", "嗯？", "Who are you?"]
+    for i in range(5):
+        test = [{
+            'role': 'system', 'content': '你是一名測試員。',
+            'role': 'user', 'content': '''假設你是想學習承諾的使用者，問一個和承諾有關的問題測試意圖分析員。
+
+            例子： 
+            使用者： 我想知道什麼是諾言
+
+            使用者：
+            '''
+        }]
+        test_message1 = asyncio.run(llm_response(test))
+        prompt = f'''\
+你要從回答中分析使用者的意圖。意圖可能是
+- 承諾
+- 問候
+- 沒有
+
+例子：
+使用者： 我想知道什麼是諾言。
+意圖： 承諾
+使用者： 你是誰？
+意圖： 問候
+
+{test_message1}
+意圖：'''
+        messages1 = [{'role': 'user', 'content': prompt}]
+        start_time = time.time()
+        result = asyncio.run(llm_response(messages1))
+        print('1:', test_message1, '->', result)
+        time1 += time.time() - start_time
+        print(time.time() - start_time)
+        messages2 = [{
+            'role': 'system', 'content': '你是一名意圖分析員。',
+            'role': 'user', 'content': f'''\
+你要從回答中分析使用者的意圖。意圖可能是
+- 承諾
+- 問候
+- 沒有
+
+例子：
+使用者： 我想知道什麼是諾言。
+意圖： 承諾
+使用者： 你是誰？
+意圖： 問候
+"""
+{test_message1}
+意圖：\
+'''
+        }]
+        start_time = time.time()
+        result = asyncio.run(llm_response(messages2))
+        print('2:', test_message1, '->', result)
+        time2 += time.time() - start_time
+        print(time.time() - start_time)
+        prompt = f'''\
+你要從回答中分析使用者的意圖。意圖可能是
+- 承諾
+- 問候
+- 沒有
+
+例子：
+使用者： 我想知道什麼是諾言。
+意圖： 承諾
+使用者： 你是誰？
+意圖： 問候
+"""
+{test_random_message[i]}
+意圖：'''
+        messages1 = [{'role': 'user', 'content': prompt}]
+        start_time = time.time()
+        result = asyncio.run(llm_response(messages1))
+        print('1:', test_random_message[i], '->', result)
+        time1 += time.time() - start_time
+        print(time.time() - start_time)
+        messages2 = [{
+            'role': 'system', 'content': '你是一名意圖分析員。',
+            'role': 'user', 'content': f'''\
+你要從回答中分析使用者的意圖。意圖可能是
+- 承諾
+- 問候
+- 沒有
+
+例子：
+使用者： 我想知道什麼是諾言。
+意圖： 承諾
+使用者： 你是誰？
+意圖： 問候
+"""
+{test_random_message[i]}
+意圖：'''
+        }]
+        start_time = time.time()
+        result = asyncio.run(llm_response(messages2))
+        print('2:', test_random_message[i], '->', result)
+        time2 += time.time() - start_time
+        print(time.time() - start_time)
+    print('Prompt 1 time:', time1)
+    print('Prompt 2 time:', time2)
     # from tools import extract_chinese_between_chars
     # questions = extract_chinese_between_chars(result, '問題：', '')
     # answers = extract_chinese_between_chars(result, '答案：', '')
