@@ -61,7 +61,8 @@ export default {
     })
     .catch(error => console.error('Error obtaining chat: ', error));
     if (this.$route.query.text) {
-      this.messages.push({ text, author: 'student' });
+      this.message = this.$route.query.text;
+      await this.sendMessage();
     }
   },
   methods: {

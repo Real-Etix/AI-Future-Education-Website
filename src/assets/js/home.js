@@ -30,7 +30,6 @@ export default {
                     method: 'main',
                     userID: this.userID,
                     name: this.inputText,
-                    message: this.inputText,
                 })
             })
             .then(response => response.json())
