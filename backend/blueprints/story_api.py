@@ -1,9 +1,11 @@
 # backend/blueprints/story_api.py
 
 from flask import Blueprint, request, abort, jsonify, url_for
-from .tables.value import *
-from .tables.story_value_link import *
-from .tables.story import *
+from .tables import (
+    get_value,
+    get_random_story, get_random_value,
+    get_story, get_story_list
+)
 
 # This file defines the story API blueprint
 story_api = Blueprint('story_api', __name__)

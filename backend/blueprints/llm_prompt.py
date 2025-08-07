@@ -1,12 +1,12 @@
 # backend/blueprints/llm_prompt.py
 
 import asyncio
-from .llm_wrapper import llm_response
-from .local_llm_wrapper import local_llm_response
 
 from .story_api import get_story_by_value
 from .tools import extract_chinese_between_chars
-from .tables.value import get_value_id
+from .tables import get_value_id
+from .llm_call import classify_llm
+from .llm_call.llm_wrapper import llm_response
 
 def intent_classify(message) -> str:
     '''
@@ -35,7 +35,7 @@ def intent_classify(message) -> str:
 意圖：'''
     
     # Obtain output from LLM and polish the result  
-    result = asyncio.run(local_llm_response(prompt, temperature=0, max_tokens=5))
+    result = asyncio.run(classify_llm.local_llm_response(prompt, temperature=0, max_tokens=5))
     modified_result = '意圖：' + result.strip()
     intents = extract_chinese_between_chars(modified_result, '意圖：', '')
     return intents[0] if intents else '沒有'

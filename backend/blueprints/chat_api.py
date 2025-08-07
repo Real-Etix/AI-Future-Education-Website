@@ -1,8 +1,11 @@
 # backend/blueprints/chat_api.py
 
 from flask import Blueprint, request, abort, jsonify
-from .tables.chat import *
-from .tables.message import *
+from .tables import (
+    get_chat_list, get_chat_name, get_chat_status, 
+    append_chat, update_chat_latest_time, 
+    get_message_list
+)
 from .chat_router import send_message, routing_begin_message, routing_message
 
 # This file defines the chat API blueprint

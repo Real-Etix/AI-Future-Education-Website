@@ -1,3 +1,5 @@
+# backend/blueprints/llm_call/llm_wrapper.py
+
 import os, openai
 import asyncio
 import time
@@ -11,7 +13,7 @@ client = openai.OpenAI(
 )
 bot = 'GPT-4o-mini'
 
-async def llm_response(prompt):
+async def llm_response(prompt) -> str:
     '''
     Send message to and receive response from Poe chatbot. 
     '''
@@ -36,10 +38,10 @@ if __name__ == '__main__':
             'role': 'system', 'content': '你是一名測試員。',
             'role': 'user', 'content': '''假設你是想學習承諾的使用者，問一個和承諾有關的問題測試意圖分析員。
 
-            例子： 
-            使用者： 我想知道什麼是諾言
+例子： 
+使用者： 我想知道什麼是諾言
 
-            使用者：
+使用者：
             '''
         }]
         test_message1 = asyncio.run(llm_response(test))

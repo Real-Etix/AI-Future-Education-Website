@@ -1,6 +1,6 @@
 # backend/blueprints/tables/message.py
 
-from sqlalchemy import select, func, and_
+from sqlalchemy import select, func
 from datetime import datetime, timezone
 from .database import db
 

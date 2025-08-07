@@ -1,11 +1,7 @@
 # backend/blueprints/chat_router.py
 
 from .llm_prompt import *
-from .tables.chat import *
-from .tables.message import append_message, get_user_message_count, get_last_message, get_stage_message
-from .tables.question_cache import exist_question_cache_record, store_question_answer_pairs, get_question, get_answer
-from .tables.story_cache import get_story_from_cache, store_story_to_cache
-from .tables.story import get_story
+from .tables import *
 from .story_api import get_value_by_story
 
 def send_message(chat_id, message, is_user):
@@ -16,6 +12,7 @@ def send_message(chat_id, message, is_user):
     _, creation_time = append_message(chat_id, stage, message, is_user)
     update_chat_latest_time(chat_id)
     return creation_time
+
 
 def routing_begin_message(chat_id, data):
     '''
