@@ -8,6 +8,7 @@ load_dotenv()
 from flask import Flask, render_template, send_from_directory
 from backend.blueprints.chat_api import chat_api
 from backend.blueprints.story_api import story_api
+from backend.blueprints.llm_prompt import preload_prompt
 
 # These class table definitions need to be imported in order to register foreign keys.
 from backend.blueprints.tables.chat import Chat
@@ -65,5 +66,6 @@ if __name__ == '__main__':
     app.register_blueprint(story_api, url_prefix='/story-api')
 
     # Run the application to be hosted 
+    preload_prompt()
     db.init_app(app)
     app.run(debug=True)

@@ -1,5 +1,6 @@
 Flask
 Flask-SQLAlchemy
-poe_api_wrapper
 python-dotenv
 sqlite3
+openai
+llama-cpp-python

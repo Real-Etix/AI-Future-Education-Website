@@ -2,6 +2,8 @@
 
 import asyncio
 from .llm_wrapper import llm_response
+from .local_llm_wrapper import local_llm_response
+
 from .story_api import get_story_by_value
 from .tools import extract_chinese_between_chars
 from .tables.value import get_value_id
@@ -13,26 +15,27 @@ def intent_classify(message) -> str:
 
     # Remove characters with a translation table
     translation_table = dict.fromkeys(map(ord, '\r\n'), None)
-    cleaned_message = message.translate(translation_table)
+    cleaned_message = message.translate(translation_table).strip()
 
     # Set the prompt to feed to LLM
-    prompt = f'''\
-你要從回答中分析使用者的意圖。意圖可能是
-- 承諾
-- 問候
-- 沒有
+    prompt = f'''<|start_header_id|>user<|end_header_id|>
+        
+從回答分類用戶的意圖，意圖一定是：承諾、問候、沒有
+如果不清楚，回答"沒有"。
 
-例子：
-使用者：我想知道什麼是諾言。
+例子："""
+用戶：我想知道什麼是諾言。
 意圖：承諾
-使用者：你是誰？
+用戶：你是誰？
 意圖：問候
+"""
 
-{cleaned_message}
+用戶：{cleaned_message}<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
 意圖：'''
     
     # Obtain output from LLM and polish the result  
-    result = asyncio.run(llm_response(prompt))
+    result = asyncio.run(local_llm_response(prompt, temperature=0, max_tokens=5))
     modified_result = '意圖：' + result.strip()
     intents = extract_chinese_between_chars(modified_result, '意圖：', '')
     return intents[0] if intents else '沒有'
@@ -138,3 +141,10 @@ def generate_scenario_feedback(message_records: list) -> str:
     modified_result = '老師：' + result.strip()
     response = extract_chinese_between_chars(modified_result, '老師：', '')
     return response[0] if response else ''
+
+def preload_prompt():
+    '''
+    This preloads the prompts to the LLM for faster inference later.
+    '''
+
+    intent_classify('')
