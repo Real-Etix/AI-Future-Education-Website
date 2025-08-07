@@ -37,7 +37,7 @@ export default {
           }));
         })
         .catch(error => console.error('Error obtaining chat: ', error));
-      this.scrollToBottom();
+        this.scrollToBottom();
       }
     )
   },
@@ -59,15 +59,28 @@ export default {
         createdAt: new Date(row['lastUpdated'])
       }));
       this.status = result['status'];
+      this.scrollToBottom();
     })
     .catch(error => console.error('Error obtaining chat: ', error));
     if (this.$route.query.text) {
       this.message = this.$route.query.text;
       await this.sendMessage();
     }
-    this.scrollToBottom();
+    
   },
   methods: {
+    /*
+    scrollToBottom function is used to scroll the chat to the bottom
+    to show the latest message
+    */
+    scrollToBottom() {
+      this.$nextTick(() => {
+        const chatBody = document.querySelector('.content-body');
+        if (chatBody) {
+          chatBody.scrollTop = chatBody.scrollHeight;
+        }
+      });
+    },
     /*
     sendMessage function is used to send a message to the chatbot
     and the message will be pushed to the messages array
@@ -85,6 +98,7 @@ export default {
         createdAt: new Date()
       });
       this.message = '';
+      this.scrollToBottom();
       await fetch('/chat-api/send-message', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -101,10 +115,11 @@ export default {
           createdAt: new Date(result['createdAt'])
         });
         this.status = result['status'];
+        this.scrollToBottom();
       })
       .catch(error => console.error('Error sending message: ', error));
       await this.loadingRemainingMessage()
-      this.scrollToBottom();
+
     },
 
     // If there are pending messages, we wait to get the messages from server.
@@ -123,22 +138,11 @@ export default {
             createdAt: new Date(result['createdAt'])
           });
             this.status = result['status'];
+            this.scrollToBottom();
         })
-        this.scrollToBottom();
+        
       }
-    },
-    /*
-    scrollToBottom function is used to scroll the chat to the bottom
-    to show the latest message
-    */
-    scrollToBottom() {
-      this.$nextTick(() => {
-        const chatBody = document.querySelector('.content-body');
-        if (chatBody) {
-          chatBody.scrollTop = chatBody.scrollHeight;
-        }
-      });
-    },
+    }
   },
   computed: {
       // Messages that is sorted in ascending order by the creation time.
