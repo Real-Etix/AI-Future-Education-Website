@@ -19,3 +19,18 @@ def extract_chinese_between_chars(text, start, end=''):
     for i in range(len(matches)):
         matches[i] = matches[i][3:] if matches[i][:3] == start else matches[i]
     return matches
+
+async def obtain_text_from_generator(generator):
+    """
+    Collects text from an asynchronous generator.
+
+    Args:
+        generator (async generator): The asynchronous generator to collect text from.
+
+    Returns:
+        str: The collected text.
+    """
+    collected_text = []
+    async for text in generator:
+        collected_text.append(text)
+    return ''.join(collected_text)
