@@ -73,8 +73,8 @@ async def routing_message(chat_id):
             # Stage 1: Story Generation
             value = get_chat_value(chat_id)
             story = await generate_new_story(value)
-            store_story_to_cache(chat_id, story)
             yield story
+            store_story_to_cache(chat_id, story)
 
             update_chat_stage(chat_id, 2)
             update_chat_status(chat_id, 1)
@@ -121,8 +121,9 @@ async def routing_message(chat_id):
             value = get_chat_value(chat_id)
             update_chat_stage(chat_id, 6)
 
-            yield f"那我用一個類似的情景來考一考你吧！"
-            yield generate_scenario(message, value)
+            yield "那我用一個類似的情景來考一考你吧！\n\n"
+            
+            yield await generate_scenario(message, value)
 
             update_chat_status(chat_id, 0)
 
@@ -132,14 +133,14 @@ async def routing_message(chat_id):
                 update_chat_stage(chat_id, 7)
 
             records = get_stage_message(chat_id, stage)
-            yield generate_scenario_persuasion(records)
+            yield await generate_scenario_persuasion(records)
 
             update_chat_status(chat_id, 0)
         
         case 7:
             # Stage 7: Scenario Feedback
             records = get_stage_message(chat_id, stage)
-            yield generate_scenario_feedback(records)
+            yield await generate_scenario_feedback(records)
 
             update_chat_stage(chat_id, 8)
             update_chat_status(chat_id, 1)

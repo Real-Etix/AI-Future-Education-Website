@@ -65,7 +65,7 @@ async def generate_new_story(value) -> str:
 
 故事：'''
     
-    generator = llm_response(prompt)
+    generator = llm_response(prompt, stream=True)
     result = await obtain_text_from_generator(generator)
     polished_result = result.strip()
     return polished_result
@@ -87,7 +87,7 @@ async def generate_qa_pairs(story, value):
 
 問題：'''
     
-    generator = llm_response(prompt)
+    generator = llm_response(prompt, stream=False)
     result = await obtain_text_from_generator(generator)
     modified_result = '問題：' + result.strip()
     questions = extract_chinese_between_chars(modified_result, '問題：', '')
@@ -107,7 +107,7 @@ async def generate_scenario(message, value) -> str:
 """
 
 情景題：'''
-    generator = llm_response(prompt)
+    generator = llm_response(prompt, stream=True)
     result = await obtain_text_from_generator(generator)
     polished_result = result.strip()
     return polished_result
