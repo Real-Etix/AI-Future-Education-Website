@@ -8,4 +8,5 @@ model_name = "hfl/Llama-3-Chinese-8B-Instruct-v3-GGUF"
 model_file = "ggml-model-q6_k.gguf"
 model_path = hf_hub_download(model_name, filename=model_file, local_dir='backend/model')
 
-classify_llm = LocalLLM(model_path)
+classify_llm = LocalLLM(model_path, n_ctx=512)
+story_llm = LocalLLM(model_path, n_ctx=1024)
