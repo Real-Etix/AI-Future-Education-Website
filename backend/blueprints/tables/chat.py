@@ -66,7 +66,7 @@ def get_chat_list(user_id: int) -> list:
 
 def get_chat_stage(chat_id: int):
     '''
-    Get the current status of the chat.
+    Get the current stage of the chat.
     '''
     return db.session.execute(
         select(Chat.stage).filter_by(id=chat_id)
@@ -87,6 +87,14 @@ def get_chat_value(chat_id: int):
     '''
     return db.session.execute(
         select(Chat.value).filter_by(id=chat_id)
+    ).scalar()
+
+def get_chat_last_updated(chat_id: int):
+    '''
+    Get the last updated time of the chat.
+    '''
+    return db.session.execute(
+        select(Chat.last_updated).filter_by(id=chat_id)
     ).scalar()
 
 def set_chat_value(chat_id: int, value: str|None):
@@ -116,9 +124,9 @@ def update_chat_stage(chat_id: int, stage: int):
     )
     db.session.commit()
 
-def update_chat_latest_time(chat_id):
+def update_chat_last_updated(chat_id):
     '''
-    Update the chat's last updated time to the current time.
+    Update the last updated time of the chat.
     '''
     update_time = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + 'Z'
     db.session.execute(

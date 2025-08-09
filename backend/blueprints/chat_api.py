@@ -3,10 +3,12 @@
 from flask import Blueprint, request, abort, jsonify
 from .tables import (
     get_chat_list, get_chat_name, get_chat_status, 
-    append_chat, update_chat_latest_time, 
+    append_chat, get_chat_last_updated, update_chat_last_updated, 
     get_message_list
 )
 from .chat_router import send_message, routing_begin_message, routing_message
+from .tools import obtain_text_from_generator
+import asyncio
 
 # This file defines the chat API blueprint
 chat_api = Blueprint('chat_api', __name__)
@@ -36,7 +38,7 @@ def create_chat():
 
         routing_begin_message(new_chat_id, data)
         
-        update_chat_latest_time(new_chat_id)
+        update_chat_last_updated(new_chat_id)
         response = {'chatID': new_chat_id}
         return jsonify(response)
     abort(405)
@@ -51,7 +53,9 @@ def update_chat_on_message_sent():
         chat_id = data['chatID']
         message = data['message']
         send_message(chat_id, message, 1)
-        response_text, created_at = routing_message(chat_id)
+        response_text = asyncio.run(obtain_text_from_generator(routing_message(chat_id)))
+        send_message(chat_id, response_text, 0)
+        created_at = get_chat_last_updated(chat_id)
         status = get_chat_status(chat_id)
         response = {
             'message': response_text,
@@ -82,7 +86,9 @@ def obtain_remaining_message():
     '''
     if request.method == 'POST':
         chat_id = request.get_json()['chatID']
-        message, creation_time = routing_message(chat_id)
+        message = asyncio.run(obtain_text_from_generator(routing_message(chat_id)))
+        send_message(chat_id, message, 0)
+        creation_time = get_chat_last_updated(chat_id)
         status = get_chat_status(chat_id)
         return jsonify({'message': message, 'createdAt': creation_time, 'status': status})
     abort(405)
