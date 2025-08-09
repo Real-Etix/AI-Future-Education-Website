@@ -1,6 +1,6 @@
 Flask
 Flask-SQLAlchemy
 python-dotenv
-sqlite3
 openai
+huggingface_hub
 llama-cpp-python

@@ -1,9 +1,5 @@
 # app.py
 
-# Before importing, disable __pycache__ generation.
-import sys
-sys.dont_write_bytecode = 1
-
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -31,4 +27,4 @@ def serve_static(path):
     return send_from_directory(app.static_folder, path) # type: ignore
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0", debug=True)
