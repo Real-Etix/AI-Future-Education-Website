@@ -34,3 +34,15 @@ async def obtain_text_from_generator(generator):
     async for text in generator:
         collected_text.append(text)
     return ''.join(collected_text)
+
+async def async_gen_to_coroutine(async_gen):
+    """
+    Converts an asynchronous generator to a coroutine that returns a list of items.
+
+    Args:
+        async_gen (async generator): The asynchronous generator to convert.
+
+    Returns:
+        coroutine: A coroutine that returns a list of items from the asynchronous generator.
+    """
+    return [item async for item in async_gen]
