@@ -28,7 +28,7 @@
   }
 })();
 /**
-* @vue/shared v3.5.17
+* @vue/shared v3.5.18
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
@@ -223,7 +223,7 @@ const stringifySymbol = (v, i = "") => {
   );
 };
 /**
-* @vue/reactivity v3.5.17
+* @vue/reactivity v3.5.18
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
@@ -1723,7 +1723,7 @@ function traverse(value, depth = Infinity, seen2) {
   return value;
 }
 /**
-* @vue/runtime-core v3.5.17
+* @vue/runtime-core v3.5.18
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
@@ -2981,7 +2981,8 @@ function applyOptions(instance) {
       expose.forEach((key) => {
         Object.defineProperty(exposed, key, {
           get: () => publicThis[key],
-          set: (val) => publicThis[key] = val
+          set: (val) => publicThis[key] = val,
+          enumerable: true
         });
       });
     } else if (!instance.exposed) {
@@ -3341,7 +3342,7 @@ function provide(key, value) {
   }
 }
 function inject(key, defaultValue, treatDefaultAsFactory = false) {
-  const instance = currentInstance || currentRenderingInstance;
+  const instance = getCurrentInstance();
   if (instance || currentApp) {
     let provides = currentApp ? currentApp._context.provides : instance ? instance.parent == null || instance.ce ? instance.vnode.appContext && instance.vnode.appContext.provides : instance.parent.provides : void 0;
     if (provides && key in provides) {
@@ -3637,7 +3638,7 @@ function validatePropName(key) {
   }
   return false;
 }
-const isInternalKey = (key) => key[0] === "_" || key === "$stable";
+const isInternalKey = (key) => key === "_" || key === "__" || key === "_ctx" || key === "$stable";
 const normalizeSlotValue = (value) => isArray$1(value) ? value.map(normalizeVNode) : [normalizeVNode(value)];
 const normalizeSlot$1 = (key, rawSlot, ctx) => {
   if (rawSlot._n) {
@@ -4267,6 +4268,7 @@ function baseCreateRenderer(options, createHydrationFns) {
       if (!initialVNode.el) {
         const placeholder = instance.subTree = createVNode(Comment);
         processCommentNode(null, placeholder, container, anchor);
+        initialVNode.placeholder = placeholder.el;
       }
     } else {
       setupRenderEffect(
@@ -4679,7 +4681,11 @@ function baseCreateRenderer(options, createHydrationFns) {
       for (i = toBePatched - 1; i >= 0; i--) {
         const nextIndex = s2 + i;
         const nextChild = c2[nextIndex];
-        const anchor = nextIndex + 1 < l2 ? c2[nextIndex + 1].el : parentAnchor;
+        const anchorVNode = c2[nextIndex + 1];
+        const anchor = nextIndex + 1 < l2 ? (
+          // #13559, fallback to el placeholder for unresolved async component
+          anchorVNode.el || anchorVNode.placeholder
+        ) : parentAnchor;
         if (newIndexToOldIndexMap[i] === 0) {
           patch(
             null,
@@ -5684,6 +5690,7 @@ function cloneVNode(vnode, extraProps, mergeRef = false, cloneTransition = false
     suspense: vnode.suspense,
     ssContent: vnode.ssContent && cloneVNode(vnode.ssContent),
     ssFallback: vnode.ssFallback && cloneVNode(vnode.ssFallback),
+    placeholder: vnode.placeholder,
     el: vnode.el,
     anchor: vnode.anchor,
     ctx: vnode.ctx,
@@ -6105,9 +6112,9 @@ function h(type, propsOrChildren, children) {
     return createVNode(type, propsOrChildren, children);
   }
 }
-const version = "3.5.17";
+const version = "3.5.18";
 /**
-* @vue/runtime-dom v3.5.17
+* @vue/runtime-dom v3.5.18
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
@@ -9235,13 +9242,13 @@ const _hoisted_11$1 = {
   class: "item-select"
 };
 const _hoisted_12$1 = { class: "text" };
-const _hoisted_13 = { class: "img" };
-const _hoisted_14 = ["src"];
-const _hoisted_15 = {
+const _hoisted_13$1 = { class: "img" };
+const _hoisted_14$1 = ["src"];
+const _hoisted_15$1 = {
   key: 2,
   class: "item-select"
 };
-const _hoisted_16 = { class: "text" };
+const _hoisted_16$1 = { class: "text" };
 const _hoisted_17 = { class: "img" };
 const _hoisted_18 = ["src"];
 function render$3(_ctx, _cache, $props, $setup, $data, $options) {
@@ -9322,24 +9329,24 @@ function render$3(_ctx, _cache, $props, $setup, $data, $options) {
             }, {
               default: withCtx(() => [
                 createBaseVNode("label", _hoisted_12$1, toDisplayString(value.title), 1),
-                createBaseVNode("div", _hoisted_13, [
+                createBaseVNode("div", _hoisted_13$1, [
                   value.img ? (openBlock(), createElementBlock("img", {
                     key: 0,
                     src: value.img
-                  }, null, 8, _hoisted_14)) : createCommentVNode("", true)
+                  }, null, 8, _hoisted_14$1)) : createCommentVNode("", true)
                 ])
               ]),
               _: 2
             }, 1032, ["to"]);
           }), 256))
-        ])) : _ctx.isShowing == 2 ? (openBlock(), createElementBlock("div", _hoisted_15, [
+        ])) : _ctx.isShowing == 2 ? (openBlock(), createElementBlock("div", _hoisted_15$1, [
           (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.consultList, (consult) => {
             return openBlock(), createBlock(_component_router_link, {
               class: "button",
               to: consult.link
             }, {
               default: withCtx(() => [
-                createBaseVNode("label", _hoisted_16, toDisplayString(consult.title), 1),
+                createBaseVNode("label", _hoisted_16$1, toDisplayString(consult.title), 1),
                 createBaseVNode("div", _hoisted_17, [
                   consult.img ? (openBlock(), createElementBlock("img", {
                     key: 0,
@@ -9408,7 +9415,8 @@ const _sfc_main$1 = {
     title: "新聊天",
     message: "",
     messages: [],
-    status: "Complete"
+    status: "Complete",
+    streamingMsg: null
   }),
   created() {
     this.$watch(
@@ -9449,14 +9457,26 @@ const _sfc_main$1 = {
         createdAt: new Date(row["lastUpdated"])
       }));
       this.status = result["status"];
+      this.scrollToBottom();
     }).catch((error) => console.error("Error obtaining chat: ", error));
     if (this.$route.query.text) {
       this.message = this.$route.query.text;
       await this.sendMessage();
     }
-    this.scrollToBottom();
   },
   methods: {
+    /*
+    scrollToBottom function is used to scroll the chat to the bottom
+    to show the latest message
+    */
+    scrollToBottom() {
+      this.$nextTick(() => {
+        const chatBody = document.querySelector(".content-body");
+        if (chatBody) {
+          chatBody.scrollTop = chatBody.scrollHeight;
+        }
+      });
+    },
     /*
     sendMessage function is used to send a message to the chatbot
     and the message will be pushed to the messages array
@@ -9474,6 +9494,7 @@ const _sfc_main$1 = {
         createdAt: /* @__PURE__ */ new Date()
       });
       this.message = "";
+      this.scrollToBottom();
       await fetch("/chat-api/send-message", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -9481,46 +9502,37 @@ const _sfc_main$1 = {
           chatID: this.chatID,
           message
         })
-      }).then((response) => response.json()).then((result) => {
-        this.messages.push({
-          author: "teacher",
-          text: result["message"].replace(/(\r\n|\r|\n)/g, "<br/>"),
-          createdAt: new Date(result["createdAt"])
-        });
-        this.status = result["status"];
-      }).catch((error) => console.error("Error sending message: ", error));
-      await this.loadingRemainingMessage();
-      this.scrollToBottom();
+      });
+      this.loadMessage();
     },
     // If there are pending messages, we wait to get the messages from server.
-    async loadingRemainingMessage() {
-      while (this.status == "Pending") {
-        await fetch("/chat-api/get-remaining-message", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ chatID: this.chatID })
-        }).then((response) => response.json()).then((result) => {
-          this.messages.push({
-            author: "teacher",
-            text: result["message"].replace(/(\r\n|\r|\n)/g, "<br/>"),
-            createdAt: new Date(result["createdAt"])
-          });
-          this.status = result["status"];
-        });
-        this.scrollToBottom();
-      }
-    },
-    /*
-    scrollToBottom function is used to scroll the chat to the bottom
-    to show the latest message
-    */
-    scrollToBottom() {
-      this.$nextTick(() => {
-        const chatBody = document.querySelector(".content-body");
-        if (chatBody) {
-          chatBody.scrollTop = chatBody.scrollHeight;
+    loadMessage() {
+      const evtSource = new EventSource(`/chat-api/send-message-response?chatID=${this.chatID}`);
+      this.streamingMsg = {
+        author: "teacher",
+        text: "",
+        createdAt: /* @__PURE__ */ new Date()
+      };
+      evtSource.onmessage = async (event) => {
+        const chunk = JSON.parse(event.data);
+        this.status = chunk.status;
+        console.log("Received status:", this.status);
+        this.streamingMsg.text += chunk.text;
+        if (chunk.status && chunk.status !== "Loading") {
+          evtSource.close();
+          this.messages.push(this.streamingMsg);
+          this.streamingMsg = null;
+          if (chunk.status === "Pending") {
+            this.loadMessage();
+          }
         }
-      });
+      };
+      evtSource.onerror = (error) => {
+        console.error("EventSource failed:", error);
+        this.streamingMsg.text = "There is an error in the server. Please try again later.";
+        this.messages.push(this.streamingMsg);
+        evtSource.close();
+      };
     }
   },
   computed: {
@@ -9528,7 +9540,7 @@ const _sfc_main$1 = {
     // This will update upon when messages are sent.
     sortedMessages: {
       get() {
-        return this.messages.sort((a, b) => a.createdAt - b.createdAt);
+        return [...this.messages].sort((a, b) => a.createdAt - b.createdAt);
       }
     }
   }
@@ -9537,29 +9549,45 @@ const _hoisted_1$1 = { class: "chat-content" };
 const _hoisted_2$1 = { class: "content-header" };
 const _hoisted_3$1 = { class: "content-body" };
 const _hoisted_4$1 = { class: "message-list" };
-const _hoisted_5 = {
-  class: "svg-icon-teacher",
-  style: { "width": "5em", "height": "5em", "vertical-align": "middle", "fill": "currentColor", "overflow": "hidden" },
-  viewBox: "0 0 1024 1024",
-  version: "1.1",
-  xmlns: "http://www.w3.org/2000/svg"
-};
-const _hoisted_6 = ["innerHTML"];
-const _hoisted_7 = ["innerHTML"];
-const _hoisted_8 = {
+const _hoisted_5 = ["innerHTML"];
+const _hoisted_6 = {
   class: "svg-icon-student",
   style: { "width": "5em", "height": "5em", "vertical-align": "middle", "fill": "currentColor", "overflow": "hidden" },
   viewBox: "0 0 1024 1024",
   version: "1.1",
   xmlns: "http://www.w3.org/2000/svg"
 };
-const _hoisted_9 = { class: "content-footer" };
+const _hoisted_7 = {
+  class: "svg-icon-teacher",
+  style: { "width": "5em", "height": "5em", "vertical-align": "middle", "fill": "currentColor", "overflow": "hidden" },
+  viewBox: "0 0 1024 1024",
+  version: "1.1",
+  xmlns: "http://www.w3.org/2000/svg"
+};
+const _hoisted_8 = ["innerHTML"];
+const _hoisted_9 = {
+  key: 0,
+  class: "message-item teacher-message-item"
+};
 const _hoisted_10 = {
+  class: "svg-icon-teacher",
+  style: { "width": "5em", "height": "5em", "vertical-align": "middle", "fill": "currentColor", "overflow": "hidden" },
+  viewBox: "0 0 1024 1024",
+  version: "1.1",
+  xmlns: "http://www.w3.org/2000/svg"
+};
+const _hoisted_11 = ["innerHTML"];
+const _hoisted_12 = {
+  key: 1,
+  class: "typing-indicator show"
+};
+const _hoisted_13 = { class: "content-footer" };
+const _hoisted_14 = {
   action: "#",
   class: "chat-form"
 };
-const _hoisted_11 = { class: "chat-controls" };
-const _hoisted_12 = { class: "send-button" };
+const _hoisted_15 = { class: "chat-controls" };
+const _hoisted_16 = { class: "send-button" };
 function render$1(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", _hoisted_1$1, [
     createBaseVNode("div", _hoisted_2$1, toDisplayString(_ctx.title), 1),
@@ -9570,29 +9598,43 @@ function render$1(_ctx, _cache, $props, $setup, $data, $options) {
             class: normalizeClass(["message-item", message.author === "teacher" ? "teacher-message-item" : "student-message-item"]),
             key: index
           }, [
-            message.author === "teacher" ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
-              (openBlock(), createElementBlock("svg", _hoisted_5, _cache[3] || (_cache[3] = [
+            message.author === "student" ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
+              createBaseVNode("p", {
+                class: "student-text",
+                innerHTML: message.text
+              }, null, 8, _hoisted_5),
+              (openBlock(), createElementBlock("svg", _hoisted_6, _cache[3] || (_cache[3] = [
+                createStaticVNode('<path d="M777.659 963.501H246.363c-5.523 0-10-4.478-10-10 0-62.313 20.887-121.591 58.092-169.33-18.873 12.188-41.297 19.174-65.132 19.174-66.167 0-119.999-53.832-119.999-120 0-27.72 9.677-54.76 27.247-76.139 15.251-18.558 35.807-32.147 58.63-38.929l-34.329-191.44a10.046 10.046 0 0 1-0.157-1.765c0-85.095 33.138-165.096 93.308-225.266 60.171-60.17 140.172-93.308 225.266-93.308h65.422c85.095 0 165.096 33.138 225.266 93.308 60.171 60.17 93.309 140.171 93.309 225.266 0 0.592-0.053 1.183-0.157 1.765l-34.562 192.742c48.565 16.26 81.731 61.779 81.732 113.766 0 66.168-53.832 120-120.001 120-20.595 0-40.109-5.188-57.191-14.429a275.089 275.089 0 0 1 19.412 29.856c22.871 40.74 35.01 87.088 35.12 134.079a10 10 0 0 1 0.021 0.649c-0.001 5.523-4.477 10.001-10.001 10.001z m-521.102-20h510.888c-1.58-40.345-12.688-79.887-32.365-114.938-20.657-36.796-50.415-68.23-86.057-90.904a9.999 9.999 0 0 1-3.623-12.816l0.69-1.418a10 10 0 0 1 4.374-9.134 254.485 254.485 0 0 0 24.949-19.182 10 10 0 0 1 16.422 5.792c8.454 47.771 49.863 82.444 98.463 82.444 55.141 0 100.001-44.86 100.001-100-0.001-45.948-31.086-85.834-75.593-96.996a9.998 9.998 0 0 1-7.41-11.464l35.988-200.695c-0.227-79.425-31.263-154.055-87.449-210.241-56.394-56.393-131.372-87.45-211.124-87.45h-65.422c-79.752 0-154.731 31.057-211.124 87.45-56.187 56.187-87.222 130.817-87.449 210.242l35.814 199.725a10 10 0 0 1-7.795 11.553c-46.015 9.627-79.412 50.791-79.412 97.877 0 55.14 44.859 100 99.999 100 48.3 0 89.664-34.423 98.354-81.851a10 10 0 0 1 16.383-5.757 254.659 254.659 0 0 0 25.441 19.371 10 10 0 0 1 4.094 10.996l0.738 1.513a10.002 10.002 0 0 1-3.459 12.718c-68.911 45.717-111.133 121.106-114.316 203.165z m86.765-222.561a119.188 119.188 0 0 1-10.324 22.947 278.395 278.395 0 0 1 19.646-15.299 10.064 10.064 0 0 1-0.276-0.98 273.509 273.509 0 0 1-9.046-6.668z m324.831 5.404a275.545 275.545 0 0 1 14.915 11.036 119.209 119.209 0 0 1-6.95-16.974 275.062 275.062 0 0 1-7.965 5.938z" fill="#322B2C" data-v-59eeadcf></path><path d="M790.298 683.346m-110 0a110 110 0 1 0 220 0 110 110 0 1 0-220 0Z" fill="#322B2C" data-v-59eeadcf></path><path d="M229.323 683.346m-110 0a110 110 0 1 0 220 0 110 110 0 1 0-220 0Z" fill="#322B2C" data-v-59eeadcf></path><path d="M813.285 598.14H210.714l-40-223.066c0-170.421 138.153-308.574 308.574-308.574h65.422c170.421 0 308.574 138.153 308.574 308.574L813.285 598.14z" fill="#322B2C" data-v-59eeadcf></path><path d="M777.64 953.502H246.361c0-146.707 118.93-265.639 265.638-265.639 146.709 0 265.641 118.932 265.641 265.639z" fill="#F0BA93" data-v-59eeadcf></path><path d="M365.343 732.003l77.909 159.721 95.567-162.894c-22.851-15.881-42.67-29.965-61.585-38.702-40.97 5.356-78.998 20.052-111.891 41.875z" fill="#F9D994" data-v-59eeadcf></path><path d="M546.581 690.103c-21.55 9.515-43.803 26.032-69.392 43.815l95.564 162.896 81.635-167.594c-31.947-20.324-68.529-34.011-107.807-39.117z" fill="#EECF8D" data-v-59eeadcf></path><path d="M770.375 534.519a266.919 266.919 0 0 0 1.609-23.433c-2.44 0.072-4.889 0.119-7.347 0.119-129.646 0-235.79-70.583-244.686-197.971-8.895 127.388-115.037 197.971-244.686 197.971-9.655 0-19.174-0.576-28.538-1.662 0.168 8.996 0.792 17.881 1.841 26.635-22.642 8.134-38.839 29.788-38.839 55.23 0 32.404 26.271 58.676 58.676 58.676a58.558 58.558 0 0 0 19.915-3.473c46.739 72.617 128.278 120.716 221.056 120.716 93.554 0 175.673-48.912 222.215-122.55a58.472 58.472 0 0 0 24.378 5.307c32.406 0 58.677-26.271 58.677-58.676 0-27.435-18.83-50.468-44.271-56.889z" fill="#F9E5E5" data-v-59eeadcf></path><path d="M512 719.386c-30.215 0-54.796-24.581-54.796-54.795h10c0 24.7 20.096 44.795 44.796 44.795s44.796-20.095 44.796-44.795h10c0 30.214-24.581 54.795-54.796 54.795zM396 523.333c-14.154 0-26.642 7.118-34.092 17.967a44.5 44.5 0 0 1-12.059-17.852l-9.392 3.433a54.458 54.458 0 0 0 16.731 23.536 41.234 41.234 0 0 0-2.523 14.249C354.666 587.494 373.172 606 396 606s41.333-18.506 41.333-41.334c0-22.827-18.506-41.333-41.333-41.333zM624.688 524.333c14.153 0 26.643 7.118 34.092 17.967a44.49 44.49 0 0 0 12.059-17.852l9.393 3.433a54.458 54.458 0 0 1-16.731 23.536 41.257 41.257 0 0 1 2.523 14.249c0 22.828-18.507 41.334-41.334 41.334-22.828 0-41.334-18.506-41.334-41.334-0.002-22.827 18.502-41.333 41.332-41.333z" fill="#322B2C" data-v-59eeadcf></path><path d="M390.003 638.213c0 5.848-3.781 10.586-8.446 10.586H324.45c-4.665 0-8.446-4.738-8.446-10.586 0-5.846 3.781-10.586 8.446-10.586h57.107c4.665 0 8.446 4.74 8.446 10.586zM703.134 634.117c0 5.848-3.782 10.586-8.446 10.586H637.58c-4.664 0-8.446-4.738-8.446-10.586 0-5.846 3.782-10.586 8.446-10.586h57.107c4.665 0 8.447 4.74 8.447 10.586z" fill="#F3A089" data-v-59eeadcf></path>', 10)
+              ])))
+            ], 64)) : (openBlock(), createElementBlock(Fragment, { key: 1 }, [
+              (openBlock(), createElementBlock("svg", _hoisted_7, _cache[4] || (_cache[4] = [
                 createStaticVNode('<path d="M777.64 965.502H246.361c-5.523 0-10-4.478-10-10 0-20.864 2.346-41.624 6.98-61.838-54.104-23.893-82.626-56.116-82.626-93.524V377.073c0-85.095 33.138-165.096 93.308-225.267 60.171-60.171 140.172-93.308 225.266-93.308h65.422c85.095 0 165.096 33.137 225.266 93.308 60.172 60.171 93.31 140.172 93.31 225.267V800.14c0 37.408-28.522 69.633-82.626 93.523a276.787 276.787 0 0 1 6.979 61.839c0 5.522-4.478 10-10 10z m-521.085-20h510.892a256.28 256.28 0 0 0-8.201-55.175 10 10 0 0 1 5.893-11.8c64.59-26.367 78.147-57.182 78.147-78.389V377.073c0-79.752-31.058-154.731-87.45-211.125-56.394-56.393-131.372-87.45-211.124-87.45H479.29c-79.752 0-154.729 31.057-211.124 87.45-56.394 56.394-87.451 131.372-87.451 211.125V800.14c0 21.207 13.558 52.021 78.148 78.39a9.999 9.999 0 0 1 5.892 11.8 256.055 256.055 0 0 0-8.2 55.172z" fill="#322B2C" data-v-59eeadcf></path><path d="M512 932.954c-89.93 0-173.819-11.438-236.213-32.209-72.01-23.974-110.072-58.761-110.072-100.605V377.073c0-83.759 32.617-162.504 91.844-221.731 59.226-59.227 137.972-91.844 221.73-91.844h65.422c83.759 0 162.504 32.617 221.73 91.844s91.844 137.972 91.844 221.731V800.14c0 41.846-38.062 76.634-110.072 100.605-62.394 20.771-146.282 32.209-236.213 32.209z" fill="#322B2C" data-v-59eeadcf></path><path d="M544.711 68.498c170.421 0 308.574 138.153 308.574 308.575V800.14c0 85.21-170.644 127.815-341.285 127.815-170.643 0-341.286-42.605-341.286-127.815V377.073c0-170.421 138.153-308.575 308.574-308.575h65.423m0-10h-65.422c-43.003 0-84.725 8.424-124.006 25.039-37.938 16.046-72.006 39.015-101.26 68.269-29.254 29.254-52.223 63.323-68.269 101.26-16.615 39.282-25.039 81.004-25.039 124.007V800.14c0 44.203 39.245 80.633 113.493 105.351 62.89 20.936 147.339 32.465 237.792 32.465s174.902-11.529 237.792-32.465c74.248-24.719 113.493-61.146 113.493-105.351V377.073c0-43.003-8.424-84.725-25.039-124.007-16.046-37.937-39.016-72.005-68.271-101.26-29.254-29.254-63.321-52.223-101.259-68.269-39.28-16.615-81.002-25.039-124.005-25.039z" fill="#322B2C" data-v-59eeadcf></path><path d="M777.64 955.502H246.361c0-146.707 118.93-265.639 265.638-265.639 146.709 0 265.641 118.932 265.641 265.639z" fill="#F7BE95" data-v-59eeadcf></path><path d="M506.185 955.502l-101.293-222.67c41.675-27.177 47.83-42.969 101.293-42.969 53.462 0 71.249 15.794 112.924 42.969l-112.924 222.67z" fill="#F4D490" data-v-59eeadcf></path><path d="M755.152 534.349v-45.106c-18.388 6.138-243.151-25.966-243.151-127.942 0 101.977-224.767 134.08-243.153 127.941v45.107c-32.649 0-59.116 26.469-59.116 59.116 0 32.649 26.467 59.118 59.116 59.118a59.44 59.44 0 0 0 8.947-0.677c25.091 67.721 100.121 116.872 188.784 116.872h90.843c88.662 0 163.691-49.151 188.782-116.872 2.92 0.442 5.907 0.677 8.948 0.677 32.649 0 59.115-26.469 59.115-59.118 0.003-32.649-26.464-59.116-59.115-59.116z" fill="#F9E5E5" data-v-59eeadcf></path><path d="M396.898 514.816c-28.918 0-53.301 19.778-60.341 46.52-11.564-3.081-14.036-11.489-14.036-25.104h-14.538c0 14.95 3.082 34.084 26.559 39.489-0.011 0.496 14.501 1.488 14.501 1.488 0-26.387 21.468-47.854 47.854-47.854 26.388 0 47.855 21.469 47.855 47.854h14.539c0.001-34.402-27.989-62.393-62.393-62.393zM622.918 514.816c28.919 0 53.301 19.778 60.342 46.52 11.564-3.081 14.035-11.489 14.035-25.104h14.539c0 14.951-3.082 34.084-26.561 39.489 0.013 0.496-14.499 1.488-14.499 1.488 0-26.387-21.47-47.854-47.856-47.854-26.386 0-47.854 21.469-47.854 47.854h-14.539c0-34.402 27.991-62.393 62.393-62.393zM512 702.686c-34.405 0-62.396-27.99-62.396-62.395h14.539c0 26.388 21.47 47.854 47.857 47.854s47.856-21.468 47.856-47.854h14.538c0.002 34.403-27.989 62.395-62.394 62.395z" fill="#322B2C" data-v-59eeadcf></path>', 7)
               ]))),
               createBaseVNode("p", {
                 class: "teacher-text",
                 innerHTML: message.text
-              }, null, 8, _hoisted_6)
-            ], 64)) : (openBlock(), createElementBlock(Fragment, { key: 1 }, [
-              createBaseVNode("p", {
-                class: "student-text",
-                innerHTML: message.text
-              }, null, 8, _hoisted_7),
-              (openBlock(), createElementBlock("svg", _hoisted_8, _cache[4] || (_cache[4] = [
-                createStaticVNode('<path d="M777.659 963.501H246.363c-5.523 0-10-4.478-10-10 0-62.313 20.887-121.591 58.092-169.33-18.873 12.188-41.297 19.174-65.132 19.174-66.167 0-119.999-53.832-119.999-120 0-27.72 9.677-54.76 27.247-76.139 15.251-18.558 35.807-32.147 58.63-38.929l-34.329-191.44a10.046 10.046 0 0 1-0.157-1.765c0-85.095 33.138-165.096 93.308-225.266 60.171-60.17 140.172-93.308 225.266-93.308h65.422c85.095 0 165.096 33.138 225.266 93.308 60.171 60.17 93.309 140.171 93.309 225.266 0 0.592-0.053 1.183-0.157 1.765l-34.562 192.742c48.565 16.26 81.731 61.779 81.732 113.766 0 66.168-53.832 120-120.001 120-20.595 0-40.109-5.188-57.191-14.429a275.089 275.089 0 0 1 19.412 29.856c22.871 40.74 35.01 87.088 35.12 134.079a10 10 0 0 1 0.021 0.649c-0.001 5.523-4.477 10.001-10.001 10.001z m-521.102-20h510.888c-1.58-40.345-12.688-79.887-32.365-114.938-20.657-36.796-50.415-68.23-86.057-90.904a9.999 9.999 0 0 1-3.623-12.816l0.69-1.418a10 10 0 0 1 4.374-9.134 254.485 254.485 0 0 0 24.949-19.182 10 10 0 0 1 16.422 5.792c8.454 47.771 49.863 82.444 98.463 82.444 55.141 0 100.001-44.86 100.001-100-0.001-45.948-31.086-85.834-75.593-96.996a9.998 9.998 0 0 1-7.41-11.464l35.988-200.695c-0.227-79.425-31.263-154.055-87.449-210.241-56.394-56.393-131.372-87.45-211.124-87.45h-65.422c-79.752 0-154.731 31.057-211.124 87.45-56.187 56.187-87.222 130.817-87.449 210.242l35.814 199.725a10 10 0 0 1-7.795 11.553c-46.015 9.627-79.412 50.791-79.412 97.877 0 55.14 44.859 100 99.999 100 48.3 0 89.664-34.423 98.354-81.851a10 10 0 0 1 16.383-5.757 254.659 254.659 0 0 0 25.441 19.371 10 10 0 0 1 4.094 10.996l0.738 1.513a10.002 10.002 0 0 1-3.459 12.718c-68.911 45.717-111.133 121.106-114.316 203.165z m86.765-222.561a119.188 119.188 0 0 1-10.324 22.947 278.395 278.395 0 0 1 19.646-15.299 10.064 10.064 0 0 1-0.276-0.98 273.509 273.509 0 0 1-9.046-6.668z m324.831 5.404a275.545 275.545 0 0 1 14.915 11.036 119.209 119.209 0 0 1-6.95-16.974 275.062 275.062 0 0 1-7.965 5.938z" fill="#322B2C" data-v-59eeadcf></path><path d="M790.298 683.346m-110 0a110 110 0 1 0 220 0 110 110 0 1 0-220 0Z" fill="#322B2C" data-v-59eeadcf></path><path d="M229.323 683.346m-110 0a110 110 0 1 0 220 0 110 110 0 1 0-220 0Z" fill="#322B2C" data-v-59eeadcf></path><path d="M813.285 598.14H210.714l-40-223.066c0-170.421 138.153-308.574 308.574-308.574h65.422c170.421 0 308.574 138.153 308.574 308.574L813.285 598.14z" fill="#322B2C" data-v-59eeadcf></path><path d="M777.64 953.502H246.361c0-146.707 118.93-265.639 265.638-265.639 146.709 0 265.641 118.932 265.641 265.639z" fill="#F0BA93" data-v-59eeadcf></path><path d="M365.343 732.003l77.909 159.721 95.567-162.894c-22.851-15.881-42.67-29.965-61.585-38.702-40.97 5.356-78.998 20.052-111.891 41.875z" fill="#F9D994" data-v-59eeadcf></path><path d="M546.581 690.103c-21.55 9.515-43.803 26.032-69.392 43.815l95.564 162.896 81.635-167.594c-31.947-20.324-68.529-34.011-107.807-39.117z" fill="#EECF8D" data-v-59eeadcf></path><path d="M770.375 534.519a266.919 266.919 0 0 0 1.609-23.433c-2.44 0.072-4.889 0.119-7.347 0.119-129.646 0-235.79-70.583-244.686-197.971-8.895 127.388-115.037 197.971-244.686 197.971-9.655 0-19.174-0.576-28.538-1.662 0.168 8.996 0.792 17.881 1.841 26.635-22.642 8.134-38.839 29.788-38.839 55.23 0 32.404 26.271 58.676 58.676 58.676a58.558 58.558 0 0 0 19.915-3.473c46.739 72.617 128.278 120.716 221.056 120.716 93.554 0 175.673-48.912 222.215-122.55a58.472 58.472 0 0 0 24.378 5.307c32.406 0 58.677-26.271 58.677-58.676 0-27.435-18.83-50.468-44.271-56.889z" fill="#F9E5E5" data-v-59eeadcf></path><path d="M512 719.386c-30.215 0-54.796-24.581-54.796-54.795h10c0 24.7 20.096 44.795 44.796 44.795s44.796-20.095 44.796-44.795h10c0 30.214-24.581 54.795-54.796 54.795zM396 523.333c-14.154 0-26.642 7.118-34.092 17.967a44.5 44.5 0 0 1-12.059-17.852l-9.392 3.433a54.458 54.458 0 0 0 16.731 23.536 41.234 41.234 0 0 0-2.523 14.249C354.666 587.494 373.172 606 396 606s41.333-18.506 41.333-41.334c0-22.827-18.506-41.333-41.333-41.333zM624.688 524.333c14.153 0 26.643 7.118 34.092 17.967a44.49 44.49 0 0 0 12.059-17.852l9.393 3.433a54.458 54.458 0 0 1-16.731 23.536 41.257 41.257 0 0 1 2.523 14.249c0 22.828-18.507 41.334-41.334 41.334-22.828 0-41.334-18.506-41.334-41.334-0.002-22.827 18.502-41.333 41.332-41.333z" fill="#322B2C" data-v-59eeadcf></path><path d="M390.003 638.213c0 5.848-3.781 10.586-8.446 10.586H324.45c-4.665 0-8.446-4.738-8.446-10.586 0-5.846 3.781-10.586 8.446-10.586h57.107c4.665 0 8.446 4.74 8.446 10.586zM703.134 634.117c0 5.848-3.782 10.586-8.446 10.586H637.58c-4.664 0-8.446-4.738-8.446-10.586 0-5.846 3.782-10.586 8.446-10.586h57.107c4.665 0 8.447 4.74 8.447 10.586z" fill="#F3A089" data-v-59eeadcf></path>', 10)
-              ])))
+              }, null, 8, _hoisted_8)
             ], 64))
           ], 2);
-        }), 128))
+        }), 128)),
+        _ctx.streamingMsg ? (openBlock(), createElementBlock("li", _hoisted_9, [
+          (openBlock(), createElementBlock("svg", _hoisted_10, _cache[5] || (_cache[5] = [
+            createStaticVNode('<path d="M777.64 965.502H246.361c-5.523 0-10-4.478-10-10 0-20.864 2.346-41.624 6.98-61.838-54.104-23.893-82.626-56.116-82.626-93.524V377.073c0-85.095 33.138-165.096 93.308-225.267 60.171-60.171 140.172-93.308 225.266-93.308h65.422c85.095 0 165.096 33.137 225.266 93.308 60.172 60.171 93.31 140.172 93.31 225.267V800.14c0 37.408-28.522 69.633-82.626 93.523a276.787 276.787 0 0 1 6.979 61.839c0 5.522-4.478 10-10 10z m-521.085-20h510.892a256.28 256.28 0 0 0-8.201-55.175 10 10 0 0 1 5.893-11.8c64.59-26.367 78.147-57.182 78.147-78.389V377.073c0-79.752-31.058-154.731-87.45-211.125-56.394-56.393-131.372-87.45-211.124-87.45H479.29c-79.752 0-154.729 31.057-211.124 87.45-56.394 56.394-87.451 131.372-87.451 211.125V800.14c0 21.207 13.558 52.021 78.148 78.39a9.999 9.999 0 0 1 5.892 11.8 256.055 256.055 0 0 0-8.2 55.172z" fill="#322B2C" data-v-59eeadcf></path><path d="M512 932.954c-89.93 0-173.819-11.438-236.213-32.209-72.01-23.974-110.072-58.761-110.072-100.605V377.073c0-83.759 32.617-162.504 91.844-221.731 59.226-59.227 137.972-91.844 221.73-91.844h65.422c83.759 0 162.504 32.617 221.73 91.844s91.844 137.972 91.844 221.731V800.14c0 41.846-38.062 76.634-110.072 100.605-62.394 20.771-146.282 32.209-236.213 32.209z" fill="#322B2C" data-v-59eeadcf></path><path d="M544.711 68.498c170.421 0 308.574 138.153 308.574 308.575V800.14c0 85.21-170.644 127.815-341.285 127.815-170.643 0-341.286-42.605-341.286-127.815V377.073c0-170.421 138.153-308.575 308.574-308.575h65.423m0-10h-65.422c-43.003 0-84.725 8.424-124.006 25.039-37.938 16.046-72.006 39.015-101.26 68.269-29.254 29.254-52.223 63.323-68.269 101.26-16.615 39.282-25.039 81.004-25.039 124.007V800.14c0 44.203 39.245 80.633 113.493 105.351 62.89 20.936 147.339 32.465 237.792 32.465s174.902-11.529 237.792-32.465c74.248-24.719 113.493-61.146 113.493-105.351V377.073c0-43.003-8.424-84.725-25.039-124.007-16.046-37.937-39.016-72.005-68.271-101.26-29.254-29.254-63.321-52.223-101.259-68.269-39.28-16.615-81.002-25.039-124.005-25.039z" fill="#322B2C" data-v-59eeadcf></path><path d="M777.64 955.502H246.361c0-146.707 118.93-265.639 265.638-265.639 146.709 0 265.641 118.932 265.641 265.639z" fill="#F7BE95" data-v-59eeadcf></path><path d="M506.185 955.502l-101.293-222.67c41.675-27.177 47.83-42.969 101.293-42.969 53.462 0 71.249 15.794 112.924 42.969l-112.924 222.67z" fill="#F4D490" data-v-59eeadcf></path><path d="M755.152 534.349v-45.106c-18.388 6.138-243.151-25.966-243.151-127.942 0 101.977-224.767 134.08-243.153 127.941v45.107c-32.649 0-59.116 26.469-59.116 59.116 0 32.649 26.467 59.118 59.116 59.118a59.44 59.44 0 0 0 8.947-0.677c25.091 67.721 100.121 116.872 188.784 116.872h90.843c88.662 0 163.691-49.151 188.782-116.872 2.92 0.442 5.907 0.677 8.948 0.677 32.649 0 59.115-26.469 59.115-59.118 0.003-32.649-26.464-59.116-59.115-59.116z" fill="#F9E5E5" data-v-59eeadcf></path><path d="M396.898 514.816c-28.918 0-53.301 19.778-60.341 46.52-11.564-3.081-14.036-11.489-14.036-25.104h-14.538c0 14.95 3.082 34.084 26.559 39.489-0.011 0.496 14.501 1.488 14.501 1.488 0-26.387 21.468-47.854 47.854-47.854 26.388 0 47.855 21.469 47.855 47.854h14.539c0.001-34.402-27.989-62.393-62.393-62.393zM622.918 514.816c28.919 0 53.301 19.778 60.342 46.52 11.564-3.081 14.035-11.489 14.035-25.104h14.539c0 14.951-3.082 34.084-26.561 39.489 0.013 0.496-14.499 1.488-14.499 1.488 0-26.387-21.47-47.854-47.856-47.854-26.386 0-47.854 21.469-47.854 47.854h-14.539c0-34.402 27.991-62.393 62.393-62.393zM512 702.686c-34.405 0-62.396-27.99-62.396-62.395h14.539c0 26.388 21.47 47.854 47.857 47.854s47.856-21.468 47.856-47.854h14.538c0.002 34.403-27.989 62.395-62.394 62.395z" fill="#322B2C" data-v-59eeadcf></path>', 7)
+          ]))),
+          _ctx.streamingMsg.text ? (openBlock(), createElementBlock("p", {
+            key: 0,
+            class: "teacher-text",
+            innerHTML: _ctx.streamingMsg.text
+          }, null, 8, _hoisted_11)) : _ctx.status === "Pending" ? (openBlock(), createElementBlock("div", _hoisted_12, _cache[6] || (_cache[6] = [
+            createBaseVNode("div", { class: "typing-dot" }, null, -1),
+            createBaseVNode("div", { class: "typing-dot" }, null, -1),
+            createBaseVNode("div", { class: "typing-dot" }, null, -1)
+          ]))) : createCommentVNode("", true)
+        ])) : createCommentVNode("", true)
       ])
     ]),
-    createBaseVNode("div", _hoisted_9, [
-      createBaseVNode("form", _hoisted_10, [
+    createBaseVNode("div", _hoisted_13, [
+      createBaseVNode("form", _hoisted_14, [
         withDirectives(createBaseVNode("textarea", {
           placeholder: "發送消息......",
           class: "message-input",
@@ -9602,8 +9644,8 @@ function render$1(_ctx, _cache, $props, $setup, $data, $options) {
         }, null, 544), [
           [vModelText, _ctx.message]
         ]),
-        createBaseVNode("div", _hoisted_11, [
-          createBaseVNode("button", _hoisted_12, [
+        createBaseVNode("div", _hoisted_15, [
+          createBaseVNode("button", _hoisted_16, [
             createBaseVNode("span", {
               class: "material-symbols-outlined",
               onClick: _cache[2] || (_cache[2] = (...args) => _ctx.sendMessage && _ctx.sendMessage(...args))

@@ -926,6 +926,57 @@ ul[data-v-59eeadcf] {
     z-index: 10;
 }
 
+/* Typing indicator styles */
+.typing-indicator[data-v-59eeadcf] {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 21.5px;
+  background-color: #fff;
+  border-radius: 10px;
+  width: fit-content;
+  border: None;
+}
+.typing-dot[data-v-59eeadcf] {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #999;
+  animation: typing-bounce-59eeadcf 1.4s infinite ease-in-out;
+}
+.typing-dot[data-v-59eeadcf]:nth-child(1) {
+  animation-delay: -0.32s;
+}
+.typing-dot[data-v-59eeadcf]:nth-child(2) {
+  animation-delay: -0.16s;
+}
+.typing-dot[data-v-59eeadcf]:nth-child(3) {
+  animation-delay: 0s;
+}
+@keyframes typing-bounce-59eeadcf {
+0%, 80%, 100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+}
+40% {
+    transform: scale(1);
+    opacity: 1;
+}
+}
+
+/* Hide typing indicator by default */
+.typing-indicator[data-v-59eeadcf] {
+  display: none;
+}
+.typing-indicator.show[data-v-59eeadcf] {
+  display: flex;
+}
+
+/* Typing indicator container */
+.typing-indicator-container[data-v-59eeadcf] {
+  margin-top: 20px;
+}
+
 
 .history-page h2[data-v-adf4c5e4] {
   font-size: 20px;
