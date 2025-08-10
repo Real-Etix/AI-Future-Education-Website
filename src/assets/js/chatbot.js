@@ -11,7 +11,8 @@ export default {
     title: '新聊天',
     message: '',
     messages: [],
-    status: 'Complete'
+    status: 'Complete',
+    streamingMsg: null,
   }),
   created() {
     // Checks whether the chat id is changed.
@@ -90,7 +91,7 @@ export default {
       if (!this.message || !this.message.trim())
         return;
       this.$emit('update-chat-list');
-      this.status = 'Pending'
+      this.status = 'Pending';
       const message = this.message;
       this.messages.push({
         author: 'student',
@@ -106,42 +107,46 @@ export default {
           chatID: this.chatID,
           message: message,
         })
-      })
-      .then(response => response.json())
-      .then(result => {
-        this.messages.push({
-          author: 'teacher',
-          text: result['message'].replace(/(\r\n|\r|\n)/g, '<br/>'),
-          createdAt: new Date(result['createdAt'])
-        });
-        this.status = result['status'];
-        this.scrollToBottom();
-      })
-      .catch(error => console.error('Error sending message: ', error));
-      await this.loadingRemainingMessage()
+      });
 
+      // If the status is pending, we will wait for the server to send the response.
+      // This is done in the loadMessage function.
+      this.loadMessage();
+      // Start streaming the response from the server.
     },
 
     // If there are pending messages, we wait to get the messages from server.
-    async loadingRemainingMessage() {
-      while (this.status == 'Pending') {
-        await fetch('/chat-api/get-remaining-message', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({chatID: this.chatID})
-        })
-        .then(response => response.json())
-        .then(result => {
-          this.messages.push({
-            author: 'teacher',
-            text: result['message'].replace(/(\r\n|\r|\n)/g, '<br/>'),
-            createdAt: new Date(result['createdAt'])
-          });
-            this.status = result['status'];
-            this.scrollToBottom();
-        })
-        
+    loadMessage() {
+      const evtSource = new EventSource(`/chat-api/send-message-response?chatID=${this.chatID}`);
+
+      // Create a streaming message to show the user that the message is being processed.
+      this.streamingMsg  = {
+        author: 'teacher',
+        text: '',
+        createdAt: new Date()
       }
+
+      evtSource.onmessage = async (event) => {
+        const chunk = JSON.parse(event.data);
+        this.status = chunk.status;
+        console.log('Received status:', this.status);
+        this.streamingMsg.text += chunk.text;
+        if (chunk.status && chunk.status !== 'Loading') {
+          evtSource.close();
+          this.messages.push(this.streamingMsg);
+          this.streamingMsg = null;
+          if (chunk.status === 'Pending') {
+            this.loadMessage();
+          }
+        }
+      };
+      evtSource.onerror = (error) => {
+        console.error('EventSource failed:', error);
+        this.streamingMsg.text = 'There is an error in the server. Please try again later.';
+        this.messages.push(this.streamingMsg);
+        evtSource.close();
+      };
+      // Wait for the EventSource to close.
     }
   },
   computed: {
@@ -149,7 +154,7 @@ export default {
       // This will update upon when messages are sent.
       sortedMessages: {
           get() {
-              return this.messages.sort((a, b) => a.createdAt - b.createdAt);
+              return [...this.messages].sort((a, b) => a.createdAt - b.createdAt);
           }
       }
   }

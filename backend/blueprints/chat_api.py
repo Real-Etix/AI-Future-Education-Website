@@ -1,17 +1,33 @@
 # backend/blueprints/chat_api.py
 
-from flask import Blueprint, request, abort, jsonify
+from flask import Response, Blueprint, request, abort, jsonify, stream_with_context
 from .tables import (
     get_chat_list, get_chat_name, get_chat_status, 
-    append_chat, get_chat_last_updated, update_chat_last_updated, 
+    append_chat, update_chat_last_updated, 
     get_message_list
 )
-from .chat_router import send_message, routing_begin_message, routing_message
-from .tools import obtain_text_from_generator
+from .chat_router import send_message, send_message_replace_line_break, routing_begin_message, routing_message
+from .tools import obtain_text_from_generator, async_gen_to_coroutine
 import asyncio
+import json
 
 # This file defines the chat API blueprint
 chat_api = Blueprint('chat_api', __name__)
+
+def generator_to_json(generator, status='Complete'):
+    """
+    Collects text from an asynchronous generator and yields it.
+    
+    Args:
+        generator (async generator): The asynchronous generator to collect text from.
+    
+    Yields:
+        str: The collected text.
+    """
+    print(status)
+    for text in asyncio.run(async_gen_to_coroutine(generator)):
+        yield f"data: {json.dumps({'text': text, 'status': 'Loading'})}\n\n"
+    yield f"data: {json.dumps({'text': '', 'status': status})}\n\n"
 
 @chat_api.route('/get-chat-list', methods=['POST'])
 def obtain_chat_list():
@@ -23,6 +39,20 @@ def obtain_chat_list():
         response = get_chat_list(user_id)
         return jsonify(response)
     abort(405)
+
+@chat_api.route('/get-chat-message', methods=['POST'])
+def obtain_chat():
+    '''
+    Get the relevant chat infomation into the frontend.
+    Status is used to indicated that there are some remaining messages that are not sent yet.
+    '''
+    if request.method == 'POST':
+        chat_id = request.get_json()['chatID']
+        title = get_chat_name(chat_id)
+        response = get_message_list(chat_id)
+        status = get_chat_status(chat_id)
+        return jsonify({'title': title, 'result': response, 'status': status})
+    return jsonify({'error': 'Unable to get chat messages'}), 400
 
 @chat_api.route('/create-chat', methods=['POST'])
 def create_chat():
@@ -53,44 +83,22 @@ def update_chat_on_message_sent():
         chat_id = data['chatID']
         message = data['message']
         send_message(chat_id, message, 1)
-        generator = routing_message(chat_id)
-        response_text = asyncio.run(obtain_text_from_generator(generator))
-        send_message(chat_id, response_text, 0)
-        created_at = get_chat_last_updated(chat_id)
-        status = get_chat_status(chat_id)
-        response = {
-            'message': response_text,
-            'createdAt': created_at,
-            'status': status
-        }
-        return jsonify(response)
-    abort(405)
+        return jsonify({'sent': True})
+    return jsonify({'error': 'Unable to send message'}), 400
 
-@chat_api.route('/get-chat-message', methods=['POST'])
-def obtain_chat():
+@chat_api.route('/send-message-response', methods=['GET', 'SEE'])
+def response_message_stream():
     '''
-    Get the relevant chat infomation into the frontend.
-    Status is used to indicated that there are some remaining messages that are not sent yet.
+    Stream the response message to the frontend.
     '''
-    if request.method == 'POST':
-        chat_id = request.get_json()['chatID']
-        title = get_chat_name(chat_id)
-        response = get_message_list(chat_id)
-        status = get_chat_status(chat_id)
-        return jsonify({'title': title, 'result': response, 'status': status})
-    abort(405)
-
-@chat_api.route('/get-remaining-message', methods=['POST'])
-def obtain_remaining_message():
-    '''
-    Get the remaining unsent message to the frontend.
-    '''
-    if request.method == 'POST':
-        chat_id = request.get_json()['chatID']
-        generator = routing_message(chat_id)
-        message = asyncio.run(obtain_text_from_generator(generator))
-        send_message(chat_id, message, 0)
-        creation_time = get_chat_last_updated(chat_id)
-        status = get_chat_status(chat_id)
-        return jsonify({'message': message, 'createdAt': creation_time, 'status': status})
-    abort(405)
+    chat_id = request.args.get('chatID', type=int)
+    if not chat_id:
+        return jsonify({'error': 'Chat ID is required'}), 400
+    
+    generator = routing_message(chat_id)
+    has_unsent_message = asyncio.run(anext(generator, 'Complete'))
+    response_generator = send_message_replace_line_break(chat_id, generator, 0)
+    return Response(
+        stream_with_context(generator_to_json(response_generator, status=has_unsent_message)),
+        mimetype='text/event-stream'
+    )
