@@ -17,8 +17,8 @@ def init_app():
     # Static folder contains all the images, css and js files
     # Template folder contains the html
     app = Flask(__name__, 
-        static_folder="../dist/static",
-        template_folder="../dist",
+        static_folder="../frontend/dist/static",
+        template_folder="../frontend/dist",
         # static_url_path="/AI-Future-Education-Website"
     )
 
@@ -32,8 +32,8 @@ def init_app():
     app.config['SECRET_KEY'] = os.urandom(24)
 
     with app.app_context():
-        classify_llm.init_llm()
-        preload_prompt()
+        # classify_llm.init_llm()
+        # preload_prompt()
 
         # Register Blueprints
         app.register_blueprint(chat_api, url_prefix='/chat-api')
