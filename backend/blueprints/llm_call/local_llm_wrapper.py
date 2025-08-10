@@ -15,6 +15,7 @@ class LocalLLM():
         self.model_path = model_path
         self.draft_model = draft_model
         self.n_ctx = n_ctx
+        self.llm = None
         print('Initialize LLM with init_llm() method.')
 
     def init_llm(self, verbose=False):
@@ -40,14 +41,15 @@ class LocalLLM():
         }
         if not self.llm:
             yield "沒有"
-        if stream:
-            for chunk in self.llm.create_completion(prompt, **generation_kwargs):
-                text = chunk['choices'][0]['text'] # type: ignore
-                yield text
         else:
-            response = self.llm.create_completion(prompt, **generation_kwargs)
-            response_text = response['choices'][0]['text'] # type: ignore
-            yield response_text 
+            if stream:
+                for chunk in self.llm.create_completion(prompt, **generation_kwargs):
+                    text = chunk['choices'][0]['text'] # type: ignore
+                    yield text
+            else:
+                response = self.llm.create_completion(prompt, **generation_kwargs)
+                response_text = response['choices'][0]['text'] # type: ignore
+                yield response_text 
 
     async def local_llm_response_stream(self, prompt):
         async for text in self.local_llm_completion(prompt, max_tokens=250, stream=True, temperature=0.8):
