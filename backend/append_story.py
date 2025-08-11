@@ -8,7 +8,7 @@
 import sqlite3
 
 
-DATABASE = 'backend/database/stories.db'
+DATABASE = 'database/stories.db'
 def append_story(title: str, story: str, values: list, img_link = 'template-pic.jpeg'):
     db = sqlite3.connect(DATABASE)
     db.row_factory = sqlite3.Row

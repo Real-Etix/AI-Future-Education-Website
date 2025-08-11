@@ -2,9 +2,8 @@
 
 import asyncio
 
-from .story_api import get_story_by_value
 from .tools import extract_chinese_between_chars, obtain_text_from_generator
-from .tables import get_value_id
+from .tables import get_value_id, get_random_story, get_story, get_story_summary, store_story_summary
 from .llm_call import classify_llm, story_llm
 from .llm_call.llm_wrapper import llm_response
 
@@ -33,7 +32,7 @@ async def intent_classify(message) -> str:
     intent = result.strip()
     return intent if intent else '沒有'
 
-async def summarize_story(story, value):
+async def summarize_story(story):
     '''
     Summarize the text to smaller text for faster generation.
     TODO: Value should be used to generate a more specific summary.
@@ -57,33 +56,25 @@ async def generate_new_story(value):
     '''
     if value:
         value_id = get_value_id(value)
-        story = get_story_by_value(value_id)
-
-    prompt = f'''\
-創造二百字內的短故事，關於承諾，不用說故事告訴我們什麼。
+        story_id = get_random_story(value_id)
+        summary = get_story_summary(story_id)
+        if not summary:
+            _, story = get_story(story_id)
+            summary = await summarize_story(story)
+            store_story_summary(story_id, summary)
+    
+    prompt = f'''<|start_header_id|>user<|end_header_id|>
+        
+根據總結，創造二百字內的現代故事，關於{value}，不用說故事告訴我們什麼。
 
 例子："""
-故事：{story}
-"""
+總結：{summary}
+"""<|eot_id|><|start_header_id|>assistant<|end_header_id|>
 
 故事：'''
     
-    async for text in llm_response(prompt, stream=True):
-        # await asyncio.sleep(1)  # See if it helps with streaming
+    async for text in story_llm.local_llm_completion(prompt, max_tokens=500, temperature=0.8, stream=True):
         yield text
-    
-#     prompt = f'''<|start_header_id|>user<|end_header_id|>
-        
-# 創造二百字內的短故事，關於承諾，不用說故事告訴我們什麼。
-
-# 例子："""
-# 故事：{story}
-# """<|eot_id|><|start_header_id|>assistant<|end_header_id|>
-
-# 故事：'''
-    
-#     async for text in story_llm.local_llm_completion(prompt, max_tokens=500, temperature=0.8, stream=True):
-#         yield text
 
 async def generate_qa_pairs(story, value):
     '''
@@ -178,5 +169,6 @@ def preload_prompt():
     '''
     This preloads the prompts to the LLM for faster inference later.
     '''
-
+    print('Preloading prompts...')
     asyncio.run(intent_classify(''))
+    print('Prompts preloaded.')

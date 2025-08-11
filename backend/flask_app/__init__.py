@@ -1,12 +1,15 @@
-# backend/__init__.py
+# backend/blueprints/__init__.py
 
+# These class table definitions need to be imported in order to register foreign keys.
+import os
 from flask import Flask
-
-from .blueprints import *
-
 from .config import db_config
 
-import os
+from .tables import *
+from .llm_call import classify_llm, story_llm
+from .chat_api import chat_api
+from .story_api import story_api
+from .llm_prompt import preload_prompt
 
 def init_app():
     '''
@@ -17,8 +20,8 @@ def init_app():
     # Static folder contains all the images, css and js files
     # Template folder contains the html
     app = Flask(__name__, 
-        static_folder="../frontend/dist/static",
-        template_folder="../frontend/dist",
+        static_folder="../../frontend/dist/static",
+        template_folder="../../frontend/dist",
         # static_url_path="/AI-Future-Education-Website"
     )
 
@@ -33,7 +36,7 @@ def init_app():
 
     with app.app_context():
         classify_llm.init_llm()
-        # story_llm.init_llm()
+        story_llm.init_llm()
         preload_prompt()
 
         # Register Blueprints

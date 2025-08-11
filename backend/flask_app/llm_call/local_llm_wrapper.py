@@ -1,6 +1,6 @@
 # backend/blueprints/llm_call/local_llm_wrapper.py
 
-from llama_cpp import Llama
+import llama_cpp
 from llama_cpp.llama_speculative import LlamaPromptLookupDecoding
 from huggingface_hub import hf_hub_download
 import multiprocessing
@@ -20,12 +20,14 @@ class LocalLLM():
 
     def init_llm(self, verbose=False):
         print('Initializing LLM...')
-        self.llm = Llama(
+        self.llm = llama_cpp.Llama(
             model_path=self.model_path,
             n_ctx = self.n_ctx,
             n_threads = multiprocessing.cpu_count(),
             draft_model = self.draft_model,
-            verbose = verbose
+            flash_attn = True,
+            verbose = verbose,
+            no_perf=True
         )
         print('Completed LLM initialization.')
 
@@ -66,9 +68,9 @@ if __name__ == '__main__':
     # model_name = "shenzhi-wang/Llama3-8B-Chinese-Chat-GGUF-8bit"
     filename = "ggml-model-q6_k.gguf"
     # filename = "Llama3-8B-Chinese-Chat-q8_0-v2_1.gguf" # Performance worse and slower
-    model_path = hf_hub_download(model_name, filename=filename, local_dir='backend/model')
+    model_path = hf_hub_download(model_name, filename=filename, local_dir='model')
     llm1 = LocalLLM(model_path)
-    llm1.init_llm(True)
+    llm1.init_llm()
     # llm2 = LocalLLM(model_path)
     # llm2.init_llm()
     print('Number of cores:', multiprocessing.cpu_count())
@@ -108,10 +110,12 @@ if __name__ == '__main__':
 #故事要二百字內
         prompt2 = f'''<|start_header_id|>user<|end_header_id|>
         
-創造二百字內的短故事，關於承諾，不用說故事告訴我們什麼。
+根據總結，創造二百字內的現代故事，關於承諾，只說故事。
 
 例子："""
-故事：{test_story[i]}
+總結：故事講述了春秋時期吳國貴族季札出使徐國的經歷。在徐國國君對季札佩戴的寶劍表示喜愛後，\
+季札承諾在完成任務後將寶劍贈送給他。然而，當季札回程時得知徐國國君已去世，感到非常悲痛。\
+他為國君舉行祭奠，並將寶劍掛在墓旁的樹上，堅持履行承諾，表現出對信義的重視。
 """<|eot_id|><|start_header_id|>assistant<|end_header_id|>
 
 故事：'''
