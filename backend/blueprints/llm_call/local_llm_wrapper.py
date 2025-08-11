@@ -68,9 +68,9 @@ if __name__ == '__main__':
     # filename = "Llama3-8B-Chinese-Chat-q8_0-v2_1.gguf" # Performance worse and slower
     model_path = hf_hub_download(model_name, filename=filename, local_dir='backend/model')
     llm1 = LocalLLM(model_path)
-    llm1.init_llm()
-    llm2 = LocalLLM(model_path)
-    llm2.init_llm()
+    llm1.init_llm(True)
+    # llm2 = LocalLLM(model_path)
+    # llm2.init_llm()
     print('Number of cores:', multiprocessing.cpu_count())
     test_random_message = ['承諾', "諾言", "怎樣遵守說過的？", "嗯？", "Who are you?"]
     test_story = [''.join(["春秋時期，吳國貴族季札出使拜訪徐國。徐國國君在接待季札時，看到了他佩帶",

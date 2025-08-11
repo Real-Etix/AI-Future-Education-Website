@@ -5,7 +5,7 @@ import asyncio
 from .story_api import get_story_by_value
 from .tools import extract_chinese_between_chars, obtain_text_from_generator
 from .tables import get_value_id
-from .llm_call import classify_llm
+from .llm_call import classify_llm, story_llm
 from .llm_call.llm_wrapper import llm_response
 
 async def intent_classify(message) -> str:
@@ -51,24 +51,39 @@ async def summarize_story(story, value):
     polished_result = result.strip()
     return polished_result
 
-async def generate_new_story(value) -> str:
+async def generate_new_story(value):
     '''
     Generate a similar story with an example using LLM.
     '''
-    value_id = get_value_id(value)
-    story = get_story_by_value(value_id)
-    prompt = f'''\
-創造有關{value}的類似故事，故事要二百字內，不用說這個故事告訴我們什麼。
+    if value:
+        value_id = get_value_id(value)
+        story = get_story_by_value(value_id)
 
-例子：
-{story}
+    prompt = f'''\
+創造二百字內的短故事，關於承諾，不用說故事告訴我們什麼。
+
+例子："""
+故事：{story}
+"""
 
 故事：'''
     
-    generator = llm_response(prompt, stream=True)
-    result = await obtain_text_from_generator(generator)
-    polished_result = result.strip()
-    return polished_result
+    async for text in llm_response(prompt, stream=True):
+        # await asyncio.sleep(1)  # See if it helps with streaming
+        yield text
+    
+#     prompt = f'''<|start_header_id|>user<|end_header_id|>
+        
+# 創造二百字內的短故事，關於承諾，不用說故事告訴我們什麼。
+
+# 例子："""
+# 故事：{story}
+# """<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+# 故事：'''
+    
+#     async for text in story_llm.local_llm_completion(prompt, max_tokens=500, temperature=0.8, stream=True):
+#         yield text
 
 async def generate_qa_pairs(story, value):
     '''

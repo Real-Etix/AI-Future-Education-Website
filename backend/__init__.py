@@ -32,8 +32,9 @@ def init_app():
     app.config['SECRET_KEY'] = os.urandom(24)
 
     with app.app_context():
-        # classify_llm.init_llm()
-        # preload_prompt()
+        classify_llm.init_llm()
+        # story_llm.init_llm()
+        preload_prompt()
 
         # Register Blueprints
         app.register_blueprint(chat_api, url_prefix='/chat-api')

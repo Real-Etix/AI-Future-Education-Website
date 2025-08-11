@@ -7,27 +7,39 @@ from .tables import (
     get_message_list
 )
 from .chat_router import send_message, send_message_replace_line_break, routing_begin_message, routing_message
-from .tools import obtain_text_from_generator, async_gen_to_coroutine
 import asyncio
 import json
 
 # This file defines the chat API blueprint
 chat_api = Blueprint('chat_api', __name__)
 
-def generator_to_json(generator, status='Complete'):
-    """
-    Collects text from an asynchronous generator and yields it.
+def iter_over_async(ait, loop, status='Complete'):
+    ait = ait.__aiter__()
+    async def get_next():
+        try:
+            return False, await ait.__anext__()
+        except StopAsyncIteration:
+            return True, None
+    while True:
+        done, value = loop.run_until_complete(get_next())
+        if done:
+            yield f"data: {json.dumps({'text': '', 'status': status})}\n\n"
+            break
+        yield f"data: {json.dumps({'text': value, 'status': 'Loading'})}\n\n"
+
+# def generator_to_json(generator, status='Complete'):
+#     """
+#     Collects text from an asynchronous generator and yields it.
     
-    Args:
-        generator (async generator): The asynchronous generator to collect text from.
+#     Args:
+#         generator (async generator): The asynchronous generator to collect text from.
     
-    Yields:
-        str: The collected text.
-    """
-    print(status)
-    for text in asyncio.run(async_gen_to_coroutine(generator)):
-        yield f"data: {json.dumps({'text': text, 'status': 'Loading'})}\n\n"
-    yield f"data: {json.dumps({'text': '', 'status': status})}\n\n"
+#     Yields:
+#         str: The collected text.
+#     """
+#     for text in asyncio.run(async_gen_to_coroutine(generator)):
+#         yield f"data: {json.dumps({'text': text, 'status': 'Loading'})}\n\n"
+#     yield f"data: {json.dumps({'text': '', 'status': status})}\n\n"
 
 @chat_api.route('/get-chat-list', methods=['POST'])
 def obtain_chat_list():
@@ -98,7 +110,8 @@ def response_message_stream():
     generator = routing_message(chat_id)
     has_unsent_message = asyncio.run(anext(generator, 'Complete'))
     response_generator = send_message_replace_line_break(chat_id, generator, 0)
-    return Response(
-        stream_with_context(generator_to_json(response_generator, status=has_unsent_message)),
-        mimetype='text/event-stream'
-    )
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    iter_gen = iter_over_async(response_generator, loop, status=has_unsent_message)
+    ctx = stream_with_context(iter_gen)
+    return Response(ctx, mimetype='text/event-stream')

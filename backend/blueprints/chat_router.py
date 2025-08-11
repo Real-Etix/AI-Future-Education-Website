@@ -82,34 +82,40 @@ async def routing_message(chat_id):
                 yield update_chat_status(chat_id, 0)
 
                 automated_message = '抱歉，我不明白你的意思。請問你想學習什麼價值觀？'
-                for text in automated_message:
-                    yield text
             
             elif value == '問候':
                 yield update_chat_status(chat_id, 0)
 
-                yield '你好！今天想學習什麼價值觀？'
+                automated_message = '你好！今天想學習什麼價值觀？'
             
             else:
                 set_chat_value(chat_id, value)
 
                 yield update_chat_status(chat_id, 1)
 
-                yield f'看來你想學習什麼是{value}呢！我們先來講一個有關{value}的故事吧！'
+                automated_message = f'看來你想學習什麼是{value}呢！我們先來講一個有關{value}的故事吧！'
 
                 update_chat_stage(chat_id, 1)
+            
+            for text in automated_message:
+                yield text
 
         case 1:
             # Stage 1: Story Generation
             value = get_chat_value(chat_id)
-            story = await generate_new_story(value)
-
             yield update_chat_status(chat_id, 1)
 
-            yield story
+            story_generator = generate_new_story(value)
+
+            story = ''
+            async for text in story_generator:
+                story += text
+                yield text
+
             store_story_to_cache(chat_id, story)
 
             update_chat_stage(chat_id, 2)
+            
 
         case 2:
             # Stage 2: Question-and-Answer Generation
@@ -120,9 +126,12 @@ async def routing_message(chat_id):
 
             yield update_chat_status(chat_id, 0)
 
-            yield '如果你看完故事，請告訴我，我會給你一些問題。'
+            automated_message = '如果你看完故事，請告訴我，我會給你一些問題。'
 
             update_chat_stage(chat_id, 3)
+
+            for text in automated_message:
+                yield text
 
         case 3:
             # Stage 3: Showing question
@@ -130,13 +139,16 @@ async def routing_message(chat_id):
             if question:
                 yield update_chat_status(chat_id, 0)
 
-                yield f'問題：{question}'
+                automated_message = f'問題：{question}'
             else:
                 answer = get_answer(chat_id)
 
                 yield update_chat_status(chat_id, 1)
 
-                yield f'答案：{answer}' if answer else ''
+                automated_message = f'答案：{answer}' if answer else ''
+            
+            for text in automated_message:
+                yield text
 
             if not exist_question_cache_record(chat_id):
                 update_chat_stage(chat_id, 4)
@@ -146,9 +158,12 @@ async def routing_message(chat_id):
             value = get_chat_value(chat_id)
             yield update_chat_status(chat_id, 0)
 
-            yield f'想必你已經對{value}有一點點了解。日常中有沒有發生什麼事和故事有關？'
+            automated_message = f'想必你已經對{value}有一點點了解。日常中有沒有發生什麼事和故事有關？'
 
             update_chat_stage(chat_id, 5)
+
+            for text in automated_message:
+                yield text
         
         case 5:
             # Stage 5: Generate similar scenario
@@ -157,7 +172,10 @@ async def routing_message(chat_id):
 
             yield update_chat_status(chat_id, 0)
 
-            yield "那我用一個類似的情景來考一考你吧！\n\n"
+            automated_message = "那我用一個類似的情景來考一考你吧！\n\n"
+
+            for text in automated_message:
+                yield text
             
             yield await generate_scenario(message, value)
 
