@@ -93,7 +93,7 @@ async def routing_message(chat_id):
 
                 yield update_chat_status(chat_id, 1)
 
-                automated_message = f'看來你想學習什麼是{value}呢！我們先來講一個有關{value}的故事吧！'
+                automated_message = f'看來你想學習什麼是{value}呢！我們先來講一個有關{value}的故事吧！請給我幾分鐘寫一個故事。'
 
                 update_chat_stage(chat_id, 1)
             
@@ -106,6 +106,11 @@ async def routing_message(chat_id):
             yield update_chat_status(chat_id, 1)
 
             story_generator = generate_new_story(value)
+
+            automated_message = f'花幾分鐘看看這個故事，我會同時準備一些關於故事的問題。\n\n'
+
+            for text in automated_message:
+                yield text
 
             story = ''
             async for text in story_generator:
@@ -126,7 +131,7 @@ async def routing_message(chat_id):
 
             yield update_chat_status(chat_id, 0)
 
-            automated_message = '如果你看完故事，請告訴我，我會給你一些問題。'
+            automated_message = '看完了嗎？如果看完請告訴我，我會問你一些問題。'
 
             update_chat_stage(chat_id, 3)
 

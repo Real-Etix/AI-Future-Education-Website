@@ -2,6 +2,7 @@
 
 # These class table definitions need to be imported in order to register foreign keys.
 import os
+import asyncio
 from flask import Flask
 from .config import db_config
 
@@ -20,9 +21,11 @@ def init_app():
     # Static folder contains all the images, css and js files
     # Template folder contains the html
     app = Flask(__name__, 
-        static_folder="../../frontend/dist/static",
-        template_folder="../../frontend/dist",
-        # static_url_path="/AI-Future-Education-Website"
+        # static_folder="../../frontend/dist/static",
+        static_folder="dist/static",
+        # template_folder="../../frontend/dist",
+        template_folder="dist",
+        static_url_path="/AI-Future-Education-Website"
     )
 
     # Database configuration
@@ -37,7 +40,7 @@ def init_app():
     with app.app_context():
         classify_llm.init_llm()
         story_llm.init_llm()
-        preload_prompt()
+        asyncio.run(preload_prompt())
 
         # Register Blueprints
         app.register_blueprint(chat_api, url_prefix='/chat-api')
