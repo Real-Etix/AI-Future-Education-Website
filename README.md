@@ -16,12 +16,5 @@ cd ..
 To run the website with backend,
 
 ```sh
-cd backend
-python -m app
-```
-
-Then after you finish,
-
-```sh
-cd ..
+python backend/app.py
 ```
