@@ -107,14 +107,14 @@ async def routing_message(chat_id):
 
             story_generator = generate_new_story(value)
 
-            automated_message = f'花幾分鐘看看這個故事，我會同時準備一些關於故事的問題。\n\n'
-
-            for text in automated_message:
-                yield text
-
             story = ''
             async for text in story_generator:
                 story += text
+                yield text
+            
+            automated_message = f'花幾分鐘看看這個故事，我會同時準備一些關於故事的問題。'
+
+            for text in automated_message:
                 yield text
 
             store_story_to_cache(chat_id, story)
