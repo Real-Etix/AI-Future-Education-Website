@@ -7,7 +7,7 @@ from .tables import get_value_id, get_random_story, get_story, get_story_summary
 from .llm_call import classify_llm, story_llm
 from .llm_call.llm_wrapper import llm_response
 
-async def intent_classify(message) -> str:
+async def intent_classify(message, max_tokens=5) -> str:
     '''
     Determine the intent (desired value) of the message using LLM.
     '''
@@ -27,7 +27,7 @@ async def intent_classify(message) -> str:
 意圖：'''
     
     # Obtain output from LLM and polish the result  
-    generator = classify_llm.local_llm_completion(prompt, max_tokens=5, temperature=0)
+    generator = classify_llm.local_llm_completion(prompt, max_tokens=max_tokens, temperature=0, top_k=0, top_p=1.0)
     result = await obtain_text_from_generator(generator)
     intent = result.strip()
     return intent if intent else '沒有'
@@ -50,7 +50,7 @@ async def summarize_story(story):
     polished_result = result.strip()
     return polished_result
 
-async def generate_new_story(value):
+async def generate_new_story(value, max_tokens=500):
     '''
     Generate a similar story with an example using LLM.
     '''
@@ -62,38 +62,39 @@ async def generate_new_story(value):
             _, story = get_story(story_id)
             summary = await summarize_story(story)
             store_story_summary(story_id, summary)
+    else:
+        summary = ''
     
     prompt = f'''<|start_header_id|>user<|end_header_id|>
         
-根據總結，創造二百字內的現代故事，關於{value}，不用說故事告訴我們什麼。
+根據總結，創造三百字的現代故事，和愛晴無關，不用說故事告訴我們什麼，關於{value}。
 
-例子："""
-總結：{summary}
-"""<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+總結：{summary}<|eot_id|><|start_header_id|>assistant<|end_header_id|>
 
 故事：'''
     
-    async for text in story_llm.local_llm_completion(prompt, max_tokens=500, temperature=0.8, stream=True):
+    async for text in story_llm.local_llm_completion(prompt, stream=True, max_tokens=max_tokens, temperature=0.8, top_k=5):
         yield text
 
-async def generate_qa_pairs(story, value):
+async def generate_qa_pairs(story, value, max_tokens=500):
     '''
     Generate questions and answers based on the story using LLM.
     '''
 
-    prompt = f'''\
-根據以下的故事，問關於{value}的三條問題：
+    prompt = f'''<|start_header_id|>user<|end_header_id|>
 
-{story}
+根據故事，製作三個問答對，有關怎麼實現價值觀，每句上下文問題對應一句簡短答案。
 
 結構："""
-問題：．．． 
+問題：．．．
 答案：．．．
 """
 
+故事（價值觀：{value}）：{story}<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
 問題：'''
     
-    generator = llm_response(prompt, stream=False)
+    generator = story_llm.local_llm_completion(prompt, max_tokens=max_tokens, temperature=0, top_k=5)
     result = await obtain_text_from_generator(generator)
     modified_result = '問題：' + result.strip()
     questions = extract_chinese_between_chars(modified_result, '問題：', '')
@@ -165,10 +166,15 @@ async def generate_scenario_feedback(message_records: list) -> str:
     response = extract_chinese_between_chars(modified_result, '老師：', '')
     return response[0] if response else ''
 
-def preload_prompt():
+async def preload_prompt():
     '''
     This preloads the prompts to the LLM for faster inference later.
     '''
     print('Preloading prompts...')
-    asyncio.run(intent_classify(''))
+    print('Intent classification preloading...')
+    await intent_classify('', 0)
+    # print('Story generation preloading...')
+    # await obtain_text_from_generator(generate_new_story('', 0))
+    # print('QA generation preloading...')
+    # await generate_qa_pairs('', '', 0)
     print('Prompts preloaded.')
