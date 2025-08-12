@@ -1,0 +1,79 @@
+# Version control
+.git/
+.gitignore
+.svn/
+.hg/
+
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.coverage
+
+# Node.js artifacts
+node_modules/
+npm-debug.log
+yarn-debug.log
+
+# Build outputs
+/dist/
+build/
+out/
+
+# IDE/editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Test and debug files
+test/
+tests/
+debug/
+*.log
+
+# Environment and secrets
+.env*
+*.env
+*.pem
+*.key
+*.crt
+config.local.*
+*.local.yml
+
+# Temporary and local files
+tmp/
+temp/
+*.tmp
+.local/
+local/
+
+# Documentation
+README*
+*.md
+docs/
+
+# Project-specific
+Dockerfile*
+docker-compose*
+
+# Go artifacts (for completeness)
+/vendor/
+*.test
+.go-cache/
+
+# Java artifacts (for completeness)
+target/
+*.class
+.gradle/
+
+# Miscellaneous
+*.db
+.cache/
+
+# Exclude model weights (if not needed in build)
+# backend/model
+
+# Nginx config (if not needed in build)
+nginx/
