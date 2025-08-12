@@ -21,10 +21,10 @@ def init_app():
     # Static folder contains all the images, css and js files
     # Template folder contains the html
     app = Flask(__name__, 
-        # static_folder="../../frontend/dist/static",
-        static_folder="dist/static",
-        # template_folder="../../frontend/dist",
-        template_folder="dist",
+        static_folder="../../frontend/dist/static",
+        # static_folder="dist/static",
+        template_folder="../../frontend/dist",
+        # template_folder="dist",
         static_url_path="/AI-Future-Education-Website"
     )
 
