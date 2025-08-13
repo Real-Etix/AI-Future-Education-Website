@@ -10,6 +10,10 @@ npm install
 npm run build
 cd ..
 ```
+To install the emoji-mart
+```sh
+npm install --save emoji-mart-vue-fast
+```
 
 ### Backend
 
