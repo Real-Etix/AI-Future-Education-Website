@@ -2,21 +2,11 @@
 
 from flask import Blueprint, request, abort, jsonify, url_for
 from .tables import (
-    get_value,
-    get_random_story, get_random_value,
-    get_story, get_story_list
+    get_value, get_random_value, get_story_list
 )
 
 # This file defines the story API blueprint
 story_api = Blueprint('story_api', __name__)
-
-def get_story_by_value(value_id: int|None):
-    '''
-    Get the story randomly by value
-    '''
-    story_candidate_id = get_random_story(value_id)
-    _, story = get_story(story_candidate_id)
-    return story
 
 def get_value_by_story(story_id: int|None):
     '''

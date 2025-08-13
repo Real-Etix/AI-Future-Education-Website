@@ -7,22 +7,26 @@ import time
 from dotenv import load_dotenv
 load_dotenv()
 
-client = openai.OpenAI(
-    api_key = os.getenv('POE_API_KEY'),   # Obtain this API from Poe and store it in .env file
-    base_url = 'https://api.poe.com/v1'
-)
+client = None
 bot = 'GPT-4o-mini'
 
 async def llm_response(prompt, stream=False):
     '''
     Send message to and receive response from Poe chatbot. 
     '''
+
+    global client
     if isinstance(prompt, list):
         # If prompt is a list, it is a message list
         messages = prompt
     else:
         # If prompt is a string, it is a single message
         messages = [{'role': 'user', 'content': prompt}]
+    if not client:
+        client = openai.OpenAI(
+            api_key = os.getenv('POE_API_KEY'),   # Obtain this API from Poe and store it in .env file
+            base_url = 'https://api.poe.com/v1'
+        )
     response = client.chat.completions.create(
         model="GPT-4o-mini", # or other models (Claude-Sonnet-4, Gemini-2.5-Pro, Llama-3.1-405B, Grok-4..)
         messages = messages, # type: ignore

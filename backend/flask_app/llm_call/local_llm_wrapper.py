@@ -1,6 +1,6 @@
 # backend/blueprints/llm_call/local_llm_wrapper.py
 
-from llama_cpp import Llama
+import llama_cpp
 from llama_cpp.llama_speculative import LlamaPromptLookupDecoding
 from huggingface_hub import hf_hub_download
 import multiprocessing
@@ -20,16 +20,20 @@ class LocalLLM():
 
     def init_llm(self, verbose=False):
         print('Initializing LLM...')
-        self.llm = Llama(
-            model_path=self.model_path,
+        self.llm = llama_cpp.Llama(
+            model_path = self.model_path,
             n_ctx = self.n_ctx,
             n_threads = multiprocessing.cpu_count(),
             draft_model = self.draft_model,
-            verbose = verbose
+            flash_attn = True,
+            verbose = verbose,
+            n_gpu_layers=1,
+            type_k = llama_cpp.GGML_TYPE_F32,
+            type_v = llama_cpp.GGML_TYPE_F32,
         )
         print('Completed LLM initialization.')
 
-    async def local_llm_completion(self, prompt, temperature=0.0, max_tokens=1024, stream=False):
+    async def local_llm_completion(self, prompt, max_tokens=1024, stream=False, temperature=0.0, top_k=10, top_p=0.95, min_p=0.05):
         '''
         Send message to and receive response from LLM locally upon completion. 
         '''
@@ -37,7 +41,10 @@ class LocalLLM():
             "max_tokens": max_tokens,
             "stop": ['<|eot_id|>','<|end_of_text|>'],
             'temperature': temperature,
-            'stream': stream
+            'stream': stream,
+            'top_k': top_k,
+            'top_p': top_p,
+            'min_p': min_p
         }
         if not self.llm:
             yield "沒有"
@@ -51,8 +58,16 @@ class LocalLLM():
                 response_text = response['choices'][0]['text'] # type: ignore
                 yield response_text 
 
-    async def local_llm_response_stream(self, prompt):
-        async for text in self.local_llm_completion(prompt, max_tokens=250, stream=True, temperature=0.8):
+    async def local_llm_response_stream(self, prompt, max_tokens, stream, temperature=0.8, top_k=10, top_p=0.95, min_p=0.05):
+        async for text in self.local_llm_completion(
+            prompt, 
+            max_tokens=max_tokens, 
+            stream=stream, 
+            temperature=temperature,
+            top_k = top_k,
+            top_p = top_p,
+            min_p = min_p
+        ):
             print(text, end='', flush=True)
         print()  # Ensure a newline at the end
 
@@ -66,11 +81,13 @@ if __name__ == '__main__':
     # model_name = "shenzhi-wang/Llama3-8B-Chinese-Chat-GGUF-8bit"
     filename = "ggml-model-q6_k.gguf"
     # filename = "Llama3-8B-Chinese-Chat-q8_0-v2_1.gguf" # Performance worse and slower
-    model_path = hf_hub_download(model_name, filename=filename, local_dir='backend/model')
-    llm1 = LocalLLM(model_path)
-    llm1.init_llm()
-    llm2 = LocalLLM(model_path)
-    llm2.init_llm()
+    model_path = hf_hub_download(model_name, filename=filename, local_dir='model')
+    # draft_model = LlamaPromptLookupDecoding()
+    draft_model = None
+    llm1 = LocalLLM(model_path, draft_model=draft_model)
+    llm1.init_llm(True)
+    # llm2 = LocalLLM(model_path)
+    # llm2.init_llm()
     print('Number of cores:', multiprocessing.cpu_count())
     test_random_message = ['承諾', "諾言", "怎樣遵守說過的？", "嗯？", "Who are you?"]
     test_story = [''.join(["春秋時期，吳國貴族季札出使拜訪徐國。徐國國君在接待季札時，看到了他佩帶",
@@ -105,17 +122,15 @@ if __name__ == '__main__':
 # 用戶：{test_random_message[i]}<|eot_id|><|start_header_id|>assistant<|end_header_id|>
 
 # 意圖：'''
-#故事要二百字內
         prompt2 = f'''<|start_header_id|>user<|end_header_id|>
-        
-創造二百字內的短故事，關於承諾，不用說故事告訴我們什麼。
 
-例子："""
-故事：{test_story[i]}
-"""<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+根據總結，創造三百字的現代故事，和愛晴無關，不用說故事告訴我們什麼，關於承諾。
+
+總結：故事講述了春秋時期吳國貴族季札出使徐國的經歷。徐國國君對季札佩帶的寶劍表現出喜愛，季札出於外交禮儀承諾在完成使命後將寶劍贈予國君。然而，當季札回程時發現國君已去世，感到非常遺憾。他仍然選擇在國君的墓前祭奠，並將寶劍掛在樹上，以此履行自己的承諾，表現出對承諾的重視和對亡者的敬意。故事強調了誠信與忠誠的重要性。\
+<|eot_id|><|start_header_id|>assistant<|end_header_id|>
 
 故事：'''
-        asyncio.run(llm1.local_llm_response_stream(prompt2))
+        asyncio.run(llm1.local_llm_response_stream(prompt2, 100, True, temperature=2.0, top_k=3, top_p=0.9, min_p=0.1))
         # text = asyncio.run(collect_response(response))
         # print(test_random_message[i], '->', response)
         # response = asyncio.run(llm2.local_llm_completion(prompt2, temperature=0.8, max_tokens = 100))

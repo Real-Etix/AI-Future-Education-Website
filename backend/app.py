@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from flask import render_template, send_from_directory
-from . import init_app
+from flask_app import init_app
 
 app = init_app()
 

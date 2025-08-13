@@ -2,13 +2,12 @@
 
 import asyncio
 
-from .story_api import get_story_by_value
 from .tools import extract_chinese_between_chars, obtain_text_from_generator
-from .tables import get_value_id
-from .llm_call import classify_llm
+from .tables import get_value_id, get_random_story, get_story, get_story_summary, store_story_summary
+from .llm_call import classify_llm, story_llm
 from .llm_call.llm_wrapper import llm_response
 
-async def intent_classify(message) -> str:
+async def intent_classify(message, max_tokens=5) -> str:
     '''
     Determine the intent (desired value) of the message using LLM.
     '''
@@ -28,12 +27,12 @@ async def intent_classify(message) -> str:
 意圖：'''
     
     # Obtain output from LLM and polish the result  
-    generator = classify_llm.local_llm_completion(prompt, max_tokens=5, temperature=0)
+    generator = classify_llm.local_llm_completion(prompt, max_tokens=max_tokens, temperature=0, top_k=0, top_p=1.0)
     result = await obtain_text_from_generator(generator)
     intent = result.strip()
     return intent if intent else '沒有'
 
-async def summarize_story(story, value):
+async def summarize_story(story):
     '''
     Summarize the text to smaller text for faster generation.
     TODO: Value should be used to generate a more specific summary.
@@ -51,43 +50,51 @@ async def summarize_story(story, value):
     polished_result = result.strip()
     return polished_result
 
-async def generate_new_story(value) -> str:
+async def generate_new_story(value, max_tokens=500):
     '''
     Generate a similar story with an example using LLM.
     '''
-    value_id = get_value_id(value)
-    story = get_story_by_value(value_id)
-    prompt = f'''\
-創造有關{value}的類似故事，故事要二百字內，不用說這個故事告訴我們什麼。
+    if value:
+        value_id = get_value_id(value)
+        story_id = get_random_story(value_id)
+        summary = get_story_summary(story_id)
+        if not summary:
+            _, story = get_story(story_id)
+            summary = await summarize_story(story)
+            store_story_summary(story_id, summary)
+    else:
+        summary = ''
+    
+    prompt = f'''<|start_header_id|>user<|end_header_id|>
+        
+根據總結，創造三百字的現代故事，和愛晴無關，不用說故事告訴我們什麼，關於{value}。
 
-例子：
-{story}
+總結：{summary}<|eot_id|><|start_header_id|>assistant<|end_header_id|>
 
 故事：'''
     
-    generator = llm_response(prompt, stream=True)
-    result = await obtain_text_from_generator(generator)
-    polished_result = result.strip()
-    return polished_result
+    async for text in story_llm.local_llm_completion(prompt, stream=True, max_tokens=max_tokens, temperature=0.8, top_k=5):
+        yield text
 
-async def generate_qa_pairs(story, value):
+async def generate_qa_pairs(story, value, max_tokens=500):
     '''
     Generate questions and answers based on the story using LLM.
     '''
 
-    prompt = f'''\
-根據以下的故事，問關於{value}的三條問題：
+    prompt = f'''<|start_header_id|>user<|end_header_id|>
 
-{story}
+根據故事，製作三個問答對，有關怎麼實現價值觀，每句上下文問題對應一句簡短答案。
 
 結構："""
-問題：．．． 
+問題：．．．
 答案：．．．
 """
 
+故事（價值觀：{value}）：{story}<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
 問題：'''
     
-    generator = llm_response(prompt, stream=False)
+    generator = story_llm.local_llm_completion(prompt, max_tokens=max_tokens, temperature=0, top_k=5)
     result = await obtain_text_from_generator(generator)
     modified_result = '問題：' + result.strip()
     questions = extract_chinese_between_chars(modified_result, '問題：', '')
@@ -159,9 +166,15 @@ async def generate_scenario_feedback(message_records: list) -> str:
     response = extract_chinese_between_chars(modified_result, '老師：', '')
     return response[0] if response else ''
 
-def preload_prompt():
+async def preload_prompt():
     '''
     This preloads the prompts to the LLM for faster inference later.
     '''
-
-    asyncio.run(intent_classify(''))
+    print('Preloading prompts...')
+    print('Intent classification preloading...')
+    await intent_classify('', 0)
+    # print('Story generation preloading...')
+    # await obtain_text_from_generator(generate_new_story('', 0))
+    # print('QA generation preloading...')
+    # await generate_qa_pairs('', '', 0)
+    print('Prompts preloaded.')

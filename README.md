@@ -11,8 +11,10 @@ npm run build
 cd ..
 ```
 
+### Backend
+
 To run the website with backend,
 
 ```sh
-python -m backend.app
+python backend/app.py
 ```
