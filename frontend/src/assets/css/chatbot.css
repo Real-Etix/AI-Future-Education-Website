@@ -92,9 +92,35 @@
     flex-grow: 1;
     flex-basis: 10vh;
     min-height: 0vh;
-    overflow: hidden;
+    overflow: visible;
     position: relative; 
 }
+
+/* absolutely position the emoji picker so it doesn't push controls */
+.content-footer .chat-form > .emoji-picker,
+.content-footer .chat-form > * .emoji-picker {
+    position: absolute;
+    right: 10px;
+    bottom: 50px;
+    z-index: 1002;
+}
+
+/* ensure the emoji button is clickable and visible */
+.content-footer .chat-controls .emoji-toggle {
+    background: transparent;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    z-index: 1001;
+}
+.content-footer .chat-controls .emoji-toggle:focus { outline: none; }
+.content-footer .chat-controls { align-items: center; }
 
 /* this is to focus the chat-form when the student click the chat-form */
 .content-footer .chat-form:focus-within{
@@ -113,12 +139,15 @@
     height: 95%;
     min-width: 0;
     overflow: hidden;
+    position: relative;
 }
 
 /* this is the button of the chat-form */
 .send-button {
     display: flex;
     align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
     padding: 2px;
     border-radius: 14px;
     background-color: var(--color-symbol);
@@ -208,7 +237,9 @@ ul {
     position: absolute;
     bottom: 10px;
     right: 10px;
-    z-index: 10;
+    z-index: 1000;
+    display: flex;
+    gap: 10px;
 }
 
 /* Typing indicator styles */
@@ -273,5 +304,4 @@ ul {
   word-break: break-word;
   overflow-wrap: anywhere;
 }
-
 

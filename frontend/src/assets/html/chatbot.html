@@ -37,10 +37,14 @@
             <form action = "#" class = "chat-form">
                 <textarea placeholder="發送消息......" class = "message-input" type="text" v-model="message" @keyup.enter="sendMessage"></textarea>
                 <div class = "chat-controls">
-                    <button class="send-button">
-                        <span class="material-symbols-outlined" @click="sendMessage">arrow_upward</span>
+                    <button type="button" class="emoji-toggle" @click="toggleEmoji">
+                        <span class="material-symbols-outlined">mood</span>
+                    </button>
+                    <button type="button" class="send-button" @click="sendMessage">
+                        <span class="material-symbols-outlined">arrow_upward</span>
                     </button>
                 </div>
+                <Emoji v-show="isEmojiOpen" @select="appendEmoji"/>
             </form>
         </div> 
-</div>
+    </div>

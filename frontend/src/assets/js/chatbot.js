@@ -1,8 +1,8 @@
-// import Sidebar from '@/components/Sidebar.vue'
+import Emoji from '@/components/Emoji.vue'
 export default {
-// components: {
-//     Sidebar
-//   },
+  components: {
+    Emoji
+  },
   props: {
     userID: Number,
   },
@@ -17,6 +17,7 @@ export default {
     isTypingStream: false,
     sseActive: false,
     typewriterDelayMs: 18,
+    isEmojiOpen: false,
   }),
   created() {
     // Checks whether the chat id is changed.
@@ -74,6 +75,18 @@ export default {
     
   },
   methods: {
+    toggleEmoji() {
+      this.isEmojiOpen = !this.isEmojiOpen;
+    },
+
+    appendEmoji(emojiChar) {
+      this.message = (this.message || '') + emojiChar;
+      this.isEmojiOpen = false;
+      this.$nextTick(() => {
+        const ta = document.querySelector('.message-input');
+        if (ta) ta.focus();
+      });
+    },
     /*
     scrollToBottom function is used to scroll the chat to the bottom
     to show the latest message

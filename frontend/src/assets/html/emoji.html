@@ -1,0 +1,9 @@
+<div class="emoji-picker">
+    <Picker 
+      :data="emojiIndex"
+      set="twitter"
+      @select="onSelect"
+      title="Pick your emoji…" emoji="point_up"
+      :i18n="{ search: 'Recherche', categories: { search: 'Résultats de recherche', recent: 'Récents' } }"
+    />
+  </div>
