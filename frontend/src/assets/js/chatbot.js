@@ -18,6 +18,7 @@ export default {
     sseActive: false,
     typewriterDelayMs: 18,
     isEmojiOpen: false,
+    charLimit: 100,
   }),
   created() {
     // Checks whether the chat id is changed.
@@ -105,7 +106,7 @@ export default {
     and the message will be displayed in the chatbot
     */
     async sendMessage() {
-      if (!this.message || !this.message.trim())
+      if (this.status === 'Pending' || this.isOverLimit || !this.message || !this.message.trim())
         return;
       this.$emit('update-chat-list');
       this.status = 'Pending';
@@ -239,6 +240,18 @@ export default {
           get() {
               return [...this.messages].sort((a, b) => a.createdAt - b.createdAt);
           }
+      },
+      currentLength() {
+        return (this.message || '').length;
+      },
+      remainingChars() {
+        return Math.max(0, this.charLimit - this.currentLength);
+      },
+      isOverLimit() {
+        return this.currentLength > this.charLimit;
+      },
+      canSend() {
+        return !this.isOverLimit && this.status !== 'Pending' && this.message && this.message.trim().length > 0;
       }
   }
 };

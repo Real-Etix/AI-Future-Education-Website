@@ -4,8 +4,9 @@
     </div>
     <div class="main-input">
         <textarea id="main-input-area" v-model="inputText" @keyup.enter="createChatByTopic" rows="5" placeholder="今天想要學習什麼價值觀"></textarea>
+        <div class="char-counter" :class="{ over: isOverLimit }">剩餘字數 {{ remainingChars }} / {{ charLimit }}</div>
         <div class="upload">
-            <button>
+            <button :disabled="!canCreate">
                 <span class="material-symbols-outlined" @click="createChatByTopic">arrow_upward</span>
             </button>
         </div>
