@@ -122,6 +122,21 @@
 .content-footer .chat-controls .emoji-toggle:focus { outline: none; }
 .content-footer .chat-controls { align-items: center; }
 
+/* handwriting toggle (unchanged minimal style like emoji) */
+.content-footer .chat-controls .handwriting-toggle {
+    background: transparent;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+.content-footer .chat-controls .handwriting-toggle:focus { outline: none; }
+
 /* this is to focus the chat-form when the student click the chat-form */
 .content-footer .chat-form:focus-within{
     outline: 2px solid orange;
@@ -320,4 +335,76 @@ ul {
   word-break: break-word;
   overflow-wrap: anywhere;
 }
+
+/* handwriting modal */
+.handwriting-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1003;
+}
+.handwriting-panel {
+  background: #fff;
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 360px;
+}
+.handwriting-actions {
+  display: flex;
+  gap: 8px;
+}
+.handwriting-actions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background-color: var(--color-symbol);
+  color: var(--color-symbol-2);
+}
+.handwriting-candidates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.handwriting-candidates button {
+  padding: 6px 10px;
+  border-radius: 10px;
+  background-color: var(--color-element);
+}
+
+/* primary action in handwriting actions */
+.handwriting-actions .primary {
+  background-color: var(--color-symbol);
+  color: var(--color-symbol-2);
+}
+
+/* close button at top-right of panel */
+.hw-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid #CCCCE5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+}
+.hw-close .material-symbols-outlined {
+  font-size: 20px;
+  color: #666;
+}
+
+.handwriting-panel { position: relative; padding-top: 56px; }
 

@@ -6,10 +6,20 @@
         <textarea id="main-input-area" v-model="inputText" @keyup.enter="createChatByTopic" rows="5" placeholder="今天想要學習什麼價值觀"></textarea>
         <div class="char-counter" :class="{ over: isOverLimit }">剩餘字數 {{ remainingChars }} / {{ charLimit }}</div>
         <div class="upload">
+            <button type="button" class="emoji-toggle" @click="isEmojiOpen = !isEmojiOpen">
+                <span class="material-symbols-outlined">mood</span>
+            </button>
+            <button type="button" class="handwriting-toggle" @click="isHandwritingOpen = true">
+                <span class="material-symbols-outlined">draw</span>
+            </button>
             <button :disabled="!canCreate">
-                <span class="material-symbols-outlined" @click="createChatByTopic">arrow_upward</span>
+                <span class="send-button" @click="createChatByTopic">
+                    <span class="material-symbols-outlined">arrow_upward</span>
+                </span>
             </button>
         </div>
+        <Emoji v-show="isEmojiOpen" @select="onEmojiSelect" />
+        <Handwriting v-if="isHandwritingOpen" @select="onHandwritingSelect" @close="isHandwritingOpen = false" />
     </div>
     <div class="category-select">
         <div class="overlap">

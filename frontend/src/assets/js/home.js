@@ -1,7 +1,10 @@
 import storyList from '@/assets/display/storyList';
 import valueList from '@/assets/display/valueList';
 import consultList from '@/assets/display/consultList';
+import Emoji from '@/components/Emoji.vue';
+import Handwriting from '@/components/Handwriting.vue';
 export default {
+    components: { Emoji, Handwriting },
     props: {
         userID: Number,
     },
@@ -14,11 +17,21 @@ export default {
             consultList: consultList,
             charLimit: 100,
             isSubmitting: false,
+            isEmojiOpen: false,
+            isHandwritingOpen: false,
         }
     },
     methods: {
         changeShowing(idx) {
             this.isShowing = idx;
+        },
+        onEmojiSelect(emojiChar) {
+            this.inputText = (this.inputText || '') + emojiChar;
+            this.isEmojiOpen = false;
+        },
+        onHandwritingSelect(text) {
+            const next = (this.inputText || '') + text;
+            this.inputText = next.length > this.charLimit ? next.slice(0, this.charLimit) : next;
         },
         async createChatByTopic() {
             if (this.isSubmitting || this.isOverLimit || !this.inputText || !this.inputText.trim()) {

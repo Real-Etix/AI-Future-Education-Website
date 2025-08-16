@@ -1,7 +1,9 @@
 import Emoji from '@/components/Emoji.vue'
+import Handwriting from '@/components/Handwriting.vue'
 export default {
   components: {
-    Emoji
+    Emoji,
+    Handwriting
   },
   props: {
     userID: Number,
@@ -19,6 +21,7 @@ export default {
     typewriterDelayMs: 18,
     isEmojiOpen: false,
     charLimit: 100,
+    isHandwritingOpen: false,
   }),
   created() {
     // Checks whether the chat id is changed.
@@ -78,6 +81,19 @@ export default {
   methods: {
     toggleEmoji() {
       this.isEmojiOpen = !this.isEmojiOpen;
+    },
+
+    toggleHandwriting() {
+      this.isHandwritingOpen = !this.isHandwritingOpen;
+    },
+
+    applyCandidate(text) {
+      const next = (this.message || '') + text;
+      this.message = next.length > this.charLimit ? next.slice(0, this.charLimit) : next;
+      this.$nextTick(() => {
+        const ta = document.querySelector('.message-input');
+        if (ta) ta.focus();
+      });
     },
 
     appendEmoji(emojiChar) {
@@ -255,3 +271,4 @@ export default {
       }
   }
 };
+

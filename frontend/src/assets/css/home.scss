@@ -44,14 +44,31 @@
             margin: 0 auto;
             display: flex;
             justify-content: flex-end;
+            gap: 8px;
+            .emoji-toggle, .handwriting-toggle {
+                background-color: transparent;
+                border: none;
+                border-radius: 14px;
+                font-size: 28px;
+                cursor: pointer;
+                line-height: 1;
+                padding: 2px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-sizing: border-box;
+                .material-symbols-outlined { color: var(--color-symbol);}
+        }
+            .send-button {
+                .material-symbols-outlined {
+                    color: var(--color-symbol-2);
+                }
+            }            
             button {
                 @extend %flex-center;
                 padding: 2px;
                 border-radius: 14px;
                 background-color: var(--color-symbol);
-                .material-symbols-outlined {
-                    color: var(--color-symbol-2);
-                }
             }
         }
     }

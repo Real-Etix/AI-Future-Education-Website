@@ -1,0 +1,18 @@
+<div class="handwriting-modal">
+  <div class="handwriting-panel" ref="panel" :style="{ top: panelTop + 'px', left: panelLeft + 'px' }">
+    <div class="hw-drag-handle" @mousedown="startDrag" @touchstart.prevent="startDrag">
+      <span class="material-symbols-outlined drag-icon">drag_indicator</span>
+    </div>
+    <button type="button" class="hw-close" @click="$emit('close')"><span class="material-symbols-outlined">close</span></button>
+    <canvas ref="canvas" :width="width" :height="height" class="hw-canvas"></canvas>
+    <div class="handwriting-actions">
+      <button type="button" @click="undo">撤銷</button>
+      <button type="button" @click="redo">恢復</button>
+      <button type="button" @click="erase">清除</button>
+      <button type="button" class="primary" @click="recognize">辨識</button>
+    </div>
+    <div class="handwriting-candidates">
+      <button v-for="(c, i) in candidates" :key="i" @click="apply(c)">{{ c }}</button>
+    </div>
+  </div>
+</div> 
