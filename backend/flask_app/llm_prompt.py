@@ -1,13 +1,12 @@
-# backend/blueprints/llm_prompt.py
+# backend/flask_app/llm_prompt.py
 
 import asyncio
 
 from .tools import extract_chinese_between_chars, obtain_text_from_generator
 from .tables import get_value_id, get_random_story, get_story, get_story_summary, store_story_summary
-from .llm_call import classify_llm, story_llm
-from .llm_call.llm_wrapper import llm_response
+from .llm_call import local_llm, llm_response, retrieval_llm
 
-async def intent_classify(message, max_tokens=5) -> str:
+async def intent_classify(message, max_tokens=5, preload_mode=False):
     '''
     Determine the intent (desired value) of the message using LLM.
     '''
@@ -27,10 +26,14 @@ async def intent_classify(message, max_tokens=5) -> str:
 意圖：'''
     
     # Obtain output from LLM and polish the result  
-    generator = classify_llm.local_llm_completion(prompt, max_tokens=max_tokens, temperature=0, top_k=0, top_p=1.0)
-    result = await obtain_text_from_generator(generator)
-    intent = result.strip()
-    return intent if intent else '沒有'
+    if preload_mode:
+        local_llm.create_state(prompt, file='intent.pkl', max_tokens=max_tokens, temperature=0, top_k=0, top_p=1.0,)
+        return ''
+    else:
+        generator = local_llm.local_llm_completion(prompt, max_tokens=max_tokens, temperature=0, top_k=0, top_p=1.0, state_file='intent.pkl')
+        result = await obtain_text_from_generator(generator)
+        intent = result.strip()
+        return intent if intent else '沒有'
 
 async def summarize_story(story):
     '''
@@ -50,7 +53,7 @@ async def summarize_story(story):
     polished_result = result.strip()
     return polished_result
 
-async def generate_new_story(value, max_tokens=500):
+async def generate_new_story(value, max_tokens=500, preload_mode=False):
     '''
     Generate a similar story with an example using LLM.
     '''
@@ -64,26 +67,30 @@ async def generate_new_story(value, max_tokens=500):
             store_story_summary(story_id, summary)
     else:
         summary = ''
-    
+
     prompt = f'''<|start_header_id|>user<|end_header_id|>
         
-根據總結，創造三百字的現代故事，和愛晴無關，不用說故事告訴我們什麼，關於{value}。
+以下面的故事為靈感，創作一段中文故事，故事限制二百字內，不包含歷史、犯罪或愛情主題。確保敘述簡潔明瞭，專注於塑造獨特的角色、不同的情節和新穎的場景。不要以證明、結論式陳述或道德教訓的方式結束，主體盡量有關{value}。
 
-總結：{summary}<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+範例：{summary}<|eot_id|><|start_header_id|>assistant<|end_header_id|>
 
 故事：'''
     
-    async for text in story_llm.local_llm_completion(prompt, stream=True, max_tokens=max_tokens, temperature=0.8, top_k=5):
-        yield text
+    if preload_mode:
+        local_llm.create_state(prompt, 'story.pkl', max_tokens=max_tokens, temperature=1.2, top_k=0, top_p=1.0, min_p=0.1)
+    else:
+        async for text in local_llm.local_llm_completion(prompt, stream=True, max_tokens=max_tokens, temperature=1.2, top_k=0, top_p=1.0, min_p=0.1, state_file='story.pkl'):
+            yield text
 
-async def generate_qa_pairs(story, value, max_tokens=500):
+async def generate_qa_pairs(story, value, max_tokens=500, preload_mode=False):
     '''
     Generate questions and answers based on the story using LLM.
     '''
+    story = story.replace("\r\n\r\n", "\r\n").replace("\n\n", "\n")
 
     prompt = f'''<|start_header_id|>user<|end_header_id|>
 
-根據故事，製作三個問答對，有關怎麼實現價值觀，每句上下文問題對應一句簡短答案。
+產生三個問答對，與故事的角色、事件或怎麼跟隨價值觀有關。
 
 結構："""
 問題：．．．
@@ -94,14 +101,20 @@ async def generate_qa_pairs(story, value, max_tokens=500):
 
 問題：'''
     
-    generator = story_llm.local_llm_completion(prompt, max_tokens=max_tokens, temperature=0, top_k=5)
-    result = await obtain_text_from_generator(generator)
-    modified_result = '問題：' + result.strip()
-    questions = extract_chinese_between_chars(modified_result, '問題：', '')
-    answers = extract_chinese_between_chars(modified_result, '答案：', '')
-    return questions, answers
+    if preload_mode:
+        local_llm.create_state(prompt, 'qa.pkl', max_tokens=max_tokens, temperature=0.8, top_k=0, top_p=1.0, min_p=0.1)
+        return '', ''
+    else:
+        generator = local_llm.local_llm_completion(prompt, max_tokens=max_tokens, temperature=0.8, top_k=0, top_p=1.0, min_p=0.1, state_file='qa.pkl')
+        result = await obtain_text_from_generator(generator)
+        modified_result = '問題：' + result.strip()
+        questions = extract_chinese_between_chars(modified_result, '問題：', '')
+        answers = extract_chinese_between_chars(modified_result, '答案：', '')
+        return questions, answers
 
 async def generate_scenario(message, value) -> str:
+
+    scenario, theme = retrieval_llm.obtain_most_similar(message)
     prompt = f'''\
 你是一名老師。請為學生制造一個關於{value}的情景題。\
 以學生為主角，問題需要問學生會怎樣做，假設學生可能會違反這個價值觀，限制一個段落和問題。
@@ -114,8 +127,9 @@ async def generate_scenario(message, value) -> str:
 """
 
 情景題：'''
-    generator = llm_response(prompt, stream=True)
-    result = await obtain_text_from_generator(generator)
+    # generator = llm_response(prompt, stream=True)
+    # result = await obtain_text_from_generator(generator)
+    result = scenario
     polished_result = result.strip()
     return polished_result
 
@@ -172,9 +186,9 @@ async def preload_prompt():
     '''
     print('Preloading prompts...')
     print('Intent classification preloading...')
-    await intent_classify('', 0)
-    # print('Story generation preloading...')
-    # await obtain_text_from_generator(generate_new_story('', 0))
-    # print('QA generation preloading...')
-    # await generate_qa_pairs('', '', 0)
+    await intent_classify('', 0, True)
+    print('Story generation preloading...')
+    [_ async for _ in generate_new_story("", 0, True)]
+    print('QA generation preloading...')
+    await generate_qa_pairs("", "", 0, True)
     print('Prompts preloaded.')

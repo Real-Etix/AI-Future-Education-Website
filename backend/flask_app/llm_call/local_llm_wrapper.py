@@ -80,14 +80,23 @@ class LocalLLM():
             print(text, end='', flush=True)
         print()  # Ensure a newline at the end
     
-    def create_state(self, prefix, file):
+    def create_state(self, prefix, file, max_tokens=1024, stream=False, temperature=0.0, top_k=10, top_p=0.95, min_p=0.05, state_file=None):
         if self.llm:
             try:
                 with open(self.state_dir + file, 'rb') as f:
                     pickle.load(f)
             except:
+                generation_kwargs = {
+                    "max_tokens": max_tokens,
+                    "stop": ['<|eot_id|>','<|end_of_text|>'],
+                    'temperature': temperature,
+                    'stream': stream,
+                    'top_k': top_k,
+                    'top_p': top_p,
+                    'min_p': min_p
+                }
                 self.llm.reset()
-                self.llm.eval(self.llm.tokenize(prefix.encode()))
+                self.llm.create_completion(prefix, **generation_kwargs)
                 with open(self.state_dir + file, 'wb') as f:
                     pickle.dump(self.llm.save_state(), f)
 
