@@ -36,8 +36,7 @@ def get_story_summary(story_id):
     result = db.session.execute(
         select(Story.summary).filter_by(id=story_id)
     ).scalar()
-    if result is None:
-        return ''
+    return result if result else ''
 
 def get_story_list():
     '''
