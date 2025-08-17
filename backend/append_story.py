@@ -6,16 +6,22 @@
 # value_categories table stores different values or other categories.
 # stories_values table links the stories with the values together.
 import sqlite3
+import asyncio
+from flask_app.llm_prompt import summarize_story
 
 
-DATABASE = 'database/stories.db'
+DATABASE = 'backend/database/stories.db'
 def append_story(title: str, story: str, values: list, img_link = 'template-pic.jpeg'):
+    summary = asyncio.run(summarize_story(story))
     db = sqlite3.connect(DATABASE)
     db.row_factory = sqlite3.Row
     cursor = db.cursor()
     cursor.execute(
-        'INSERT OR IGNORE INTO stories (title, story, img_link) VALUES (?, ?, ?)',
-        (title, story, img_link)
+        '''
+        INSERT INTO stories (title, story, summary, img_link) VALUES (?, ?, ?, ?) 
+        ON CONFLICT(title, story) DO UPDATE SET summary = excluded.summary
+        ''',
+        (title, story, summary, img_link)
     )
     cursor.execute(
         'SELECT id FROM stories WHERE title = ? AND story = ?',
@@ -39,11 +45,23 @@ def append_story(title: str, story: str, values: list, img_link = 'template-pic.
         db.commit()
 
 
-# title = "季札贈劍"
-# story = '''春秋時期，吳國貴族季札出使拜訪徐國。徐國國君在接待季札時，看到了他佩帶的寶劍，流露出喜愛之情。細心的季札看出徐國國君的心意，但作為吳國使節，他到各諸侯國拜訪時不能沒有寶劍作配飾，這是一種外交禮儀，他不能不遵守，有辱自己的使命。於是季札向他承諾，完成出使後，必定把寶劍送給徐國國君。 
-# 過了一段時間，季札終於完成出使任務，回程時途經徐國，他想去拜訪徐國國君，以贈送寶劍，卻驚訝發現徐國國君已死。季札感到十分遺憾，萬分悲痛地來到徐國國君墓前祭奠。祭奠完畢，他解下身上的寶劍，把它掛在墓旁的樹上。這時，侍從疑惑地問，為甚麼徐國國君已死，季札仍要留下珍貴的寶劍呢？季札解釋，當時他已承諾給徐國國君贈劍，不能因為徐國國君已死，就違背自己的諾言。'''
-# values = ['承諾']
-title = 'Story 5'
-story = title
+title = "承諾的力量"
+story = ''.join([
+        "在一個寧靜的小村莊裡，住著一位名叫小雨的女孩。她和母親相依為",
+        "命，母親常常告訴她：「承諾就像一朵花，需要精心呵護。」小雨深",
+        "知這句話的意義，於是立志要成為一個守信的人。\n\n",
+        "有一天，村莊裡的老奶奶生病了，村民們都忙著自己的事，沒有人願",
+        "意去照顧她。小雨心裡想起了母親的話，決定去幫助老奶奶。她每天",
+        "下午都會帶著食物，陪伴老奶奶聊天，讓她不再孤單。\n\n",
+        "隨著時間的推移，老奶奶的健康逐漸好轉，村民們也開始注意到小雨",
+        "的付出。他們紛紛向小雨請教，如何才能像她一樣守信。小雨微笑著",
+        "說：「只要心中有承諾，就會有力量去實踐。」\n\n",
+        "一天，老奶奶感謝小雨，送她一朵自己親手編織的花朵，並說：「這",
+        "是我對你承諾的回報，永遠記住，真誠的心能夠改變世界。」小雨接",
+        "過花朵，心裡充滿了暖意。\n\n",
+        "從那以後，小雨更加堅定了自己的信念，無論是對朋友還是對家人，",
+        "她都始終如一地履行著自己的承諾。小村莊的每個人都因此變得更加",
+        "團結，因為小雨的故事告訴他們，承諾的力量無遠弗屆。"
+    ])
 values = ['承諾']
 append_story(title, story, values)
