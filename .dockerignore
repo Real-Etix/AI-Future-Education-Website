@@ -69,7 +69,6 @@ target/
 .gradle/
 
 # Miscellaneous
-*.db
 .cache/
 
 # Exclude model weights (if not needed in build)
