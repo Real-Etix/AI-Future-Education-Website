@@ -27,7 +27,7 @@ async def intent_classify(message, max_tokens=5, preload_mode=False):
     
     # Obtain output from LLM and polish the result  
     if preload_mode:
-        local_llm.create_state(prompt, file='intent.pkl', max_tokens=max_tokens, temperature=0, top_k=0, top_p=1.0,)
+        local_llm.create_state(prompt, file='intent.pkl', max_tokens=1, temperature=0, top_k=0, top_p=1.0)
         return ''
     else:
         generator = local_llm.local_llm_completion(prompt, max_tokens=max_tokens, temperature=0, top_k=0, top_p=1.0, state_file='intent.pkl')
@@ -77,7 +77,8 @@ async def generate_new_story(value, max_tokens=500, preload_mode=False):
 故事：'''
     
     if preload_mode:
-        local_llm.create_state(prompt, 'story.pkl', max_tokens=max_tokens, temperature=1.2, top_k=0, top_p=1.0, min_p=0.1)
+        local_llm.create_state(prompt, 'story.pkl', max_tokens=1, temperature=1.2, top_k=0, top_p=1.0, min_p=0.1)
+        yield ''
     else:
         async for text in local_llm.local_llm_completion(prompt, stream=True, max_tokens=max_tokens, temperature=1.2, top_k=0, top_p=1.0, min_p=0.1, state_file='story.pkl'):
             yield text
@@ -102,7 +103,7 @@ async def generate_qa_pairs(story, value, max_tokens=500, preload_mode=False):
 問題：'''
     
     if preload_mode:
-        local_llm.create_state(prompt, 'qa.pkl', max_tokens=max_tokens, temperature=0.8, top_k=0, top_p=1.0, min_p=0.1)
+        local_llm.create_state(prompt, 'qa.pkl', max_tokens=1, temperature=0.8, top_k=0, top_p=1.0, min_p=0.1)
         return '', ''
     else:
         generator = local_llm.local_llm_completion(prompt, max_tokens=max_tokens, temperature=0.8, top_k=0, top_p=1.0, min_p=0.1, state_file='qa.pkl')
@@ -112,26 +113,27 @@ async def generate_qa_pairs(story, value, max_tokens=500, preload_mode=False):
         answers = extract_chinese_between_chars(modified_result, '答案：', '')
         return questions, answers
 
-async def generate_scenario(message, value) -> str:
-
-    scenario, theme = retrieval_llm.obtain_most_similar(message)
+async def generate_scenario(message, max_tokens=500, preload_mode=False):
+    '''
+    Generate a scenario based on the similar scenario with the message retrieved from the vector database.
+    Note that it is possible that the LLM can generate the same as retrieved one. It is expected.
+    '''
+    if not preload_mode:
+        scenario, theme = retrieval_llm.obtain_most_similar(message)
+    else:
+        scenario, theme = '', ''
     prompt = f'''\
-你是一名老師。請為學生制造一個關於{value}的情景題。\
-以學生為主角，問題需要問學生會怎樣做，假設學生可能會違反這個價值觀，限制一個段落和問題。
-情景題可以和以下類似：
-{message}
+輕微更改以下情景的角色和設定，但保留原意，不要加任何東西，主題是{theme}
 
-"""
-結構：
-情景題：．．．
-"""
+情景：{scenario}<|eot_id|><|start_header_id|>assistant<|end_header_id|>
 
-情景題：'''
-    # generator = llm_response(prompt, stream=True)
-    # result = await obtain_text_from_generator(generator)
-    result = scenario
-    polished_result = result.strip()
-    return polished_result
+情景：'''
+    if preload_mode:
+        local_llm.create_state(prompt, 'scenario.pkl', max_tokens=1, temperature=0.8, top_k=0, top_p=0.9, min_p=0.1)
+        yield ''
+    else:
+        async for text in local_llm.local_llm_completion(prompt, stream=True, max_tokens=max_tokens, temperature=0.8, top_k=0, top_p=0.9, min_p=0.1, state_file='scenario.pkl'):
+            yield text
 
 async def generate_scenario_persuasion(message_records: list) -> str:
     '''
@@ -186,9 +188,11 @@ async def preload_prompt():
     '''
     print('Preloading prompts...')
     print('Intent classification preloading...')
-    await intent_classify('', 0, True)
+    await intent_classify('', 1, True)
     print('Story generation preloading...')
-    [_ async for _ in generate_new_story("", 0, True)]
+    [_ async for _ in generate_new_story('', 1, True)]
     print('QA generation preloading...')
-    await generate_qa_pairs("", "", 0, True)
+    await generate_qa_pairs('', '', 1, True)
+    print('Scenario generation preloading...')
+    [_ async for _ in generate_scenario('', 1, True)]
     print('Prompts preloaded.')

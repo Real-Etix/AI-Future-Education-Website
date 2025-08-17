@@ -133,10 +133,10 @@ async def routing_message(chat_id):
 
             automated_message = '看完了嗎？如果看完請告訴我，我會問你一些問題。'
 
-            update_chat_stage(chat_id, 3)
-
             for text in automated_message:
                 yield text
+            
+            update_chat_stage(chat_id, 3)
 
         case 3:
             # Stage 3: Showing question
@@ -165,15 +165,14 @@ async def routing_message(chat_id):
 
             automated_message = f'想必你已經對{value}有一點點了解。日常中有沒有發生什麼事和故事有關？'
 
-            update_chat_stage(chat_id, 5)
-
             for text in automated_message:
                 yield text
+            
+            update_chat_stage(chat_id, 5)
         
         case 5:
             # Stage 5: Generate similar scenario
             value = get_chat_value(chat_id)
-            update_chat_stage(chat_id, 6)
 
             yield update_chat_status(chat_id, 0)
 
@@ -182,8 +181,11 @@ async def routing_message(chat_id):
             for text in automated_message:
                 yield text
             
-            yield await generate_scenario(message, value)
+            scenario_generator = generate_scenario(message)
+            async for text in scenario_generator:
+                yield text
 
+            update_chat_stage(chat_id, 6)
 
         case 6:
             # Stage 6: Scenario Response
