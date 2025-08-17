@@ -1,4 +1,4 @@
-# backend/blueprints/__init__.py
+# backend/flask_app/__init__.py
 
 # These class table definitions need to be imported in order to register foreign keys.
 import os
@@ -7,7 +7,7 @@ from flask import Flask
 from .config import db_config
 
 from .tables import *
-from .llm_call import classify_llm, story_llm
+from .llm_call import local_llm, retrieval_llm
 from .chat_api import chat_api
 from .story_api import story_api
 from .llm_prompt import preload_prompt
@@ -22,9 +22,9 @@ def init_app():
     # Template folder contains the html
     app = Flask(__name__, 
         static_folder="../../frontend/dist/static",
-        # static_folder="dist/static",
+        # static_folder="../dist/static",
         template_folder="../../frontend/dist",
-        # template_folder="dist",
+        # template_folder="../dist",
         static_url_path="/AI-Future-Education-Website"
     )
 
@@ -38,8 +38,8 @@ def init_app():
     app.config['SECRET_KEY'] = os.urandom(24)
 
     with app.app_context():
-        classify_llm.init_llm()
-        story_llm.init_llm()
+        local_llm.init_llm(True)
+        retrieval_llm.init_sentence_llm()
         asyncio.run(preload_prompt())
 
         # Register Blueprints
