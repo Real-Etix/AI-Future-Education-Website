@@ -23,7 +23,10 @@ package-lock.json
 __pycache__
 *.py[cod]
 
-backend/model/*
+*/model/*.gguf
+*/model/sentence_encoder
+*/model/prompt_cache/*
+*/model/.cache
 
 /cypress/videos/
 /cypress/screenshots/

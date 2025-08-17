@@ -9,10 +9,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "emoji-mart-vue-fast": "^15.0.4",
     "sass-embedded": "^1.89.2",
     "vue": "^3.5.17",
-    "vue-router": "^4.5.1",
-    "emoji-mart-vue-fast": "^11.5.0"
+    "vue-router": "^4.5.1"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.0",
@@ -21,4 +21,3 @@
     "vite-plugin-vue-devtools": "^7.7.7"
   }
 }
-
