@@ -108,7 +108,7 @@ def response_message_stream():
         return jsonify({'error': 'Chat ID is required'}), 400
     
     generator = routing_message(chat_id)
-    has_unsent_message = asyncio.run(anext(generator, 'Complete'))
+    has_unsent_message = asyncio.run(anext(generator, 'Complete')) # type: ignore
     response_generator = send_message_replace_line_break(chat_id, generator, 0)
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
