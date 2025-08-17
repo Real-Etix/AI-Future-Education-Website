@@ -1,4 +1,4 @@
-# backend/blueprints/chat_api.py
+# backend/flask_app/chat_api.py
 
 from flask import Response, Blueprint, request, abort, jsonify, stream_with_context
 from .tables import (

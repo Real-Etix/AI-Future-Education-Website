@@ -1,4 +1,4 @@
-# backend/blueprints/chat_router.py
+# backend/flask_app/chat_router.py
 
 from .llm_prompt import *
 from .tables import *

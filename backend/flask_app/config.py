@@ -1,4 +1,4 @@
-# backend/config.py
+# backend/flask_app/config.py
 
 import os
 

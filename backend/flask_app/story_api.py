@@ -1,4 +1,4 @@
-# backend/blueprints/story_api.py
+# backend/flask_app/story_api.py
 
 from flask import Blueprint, request, abort, jsonify, url_for
 from .tables import (
