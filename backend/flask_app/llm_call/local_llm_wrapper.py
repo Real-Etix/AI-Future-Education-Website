@@ -57,12 +57,12 @@ class LocalLLM():
                         self.llm.load_state(state)
                 except: pass
             if stream:
-                for chunk in self.llm.create_completion(prompt.encode(), **generation_kwargs):
+                for chunk in self.llm.create_completion(prompt, **generation_kwargs):
                     text = chunk['choices'][0]['text'] # type: ignore
                     text = converter.convert(text)
                     yield text
             else:
-                response = self.llm.create_completion(prompt.encode(), **generation_kwargs)
+                response = self.llm.create_completion(prompt, **generation_kwargs)
                 response_text = response['choices'][0]['text'] # type: ignore
                 response_text = converter.convert(response_text)
                 yield response_text
