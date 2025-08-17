@@ -70,11 +70,13 @@ async def generate_new_story(value, max_tokens=500, preload_mode=False):
 
     prompt = f'''<|start_header_id|>user<|end_header_id|>
         
-以下面的故事為靈感，創作一段中文故事，故事限制二百字內，不包含歷史、犯罪或愛情主題。確保敘述簡潔明瞭，專注於塑造獨特的角色、不同的情節和新穎的場景。不要以證明、結論式陳述或道德教訓的方式結束，主體盡量有關{value}。
+以下面的故事為靈感，限制二百字內創作一段中文故事，不涉及歷史、犯罪或愛情。確保敘述簡潔明瞭，專注於塑造獨特的角色、不同的情節和新穎的場景。不要以證明、結論式陳述或道德教訓的方式結束，主體盡量有關{value}。
 
-範例：{summary}<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+範例：{summary}
 
-故事：'''
+故事：<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+'''
     
     if preload_mode:
         local_llm.create_state(prompt, 'story.pkl', max_tokens=1, temperature=1.2, top_k=0, top_p=1.0, min_p=0.1)
@@ -129,58 +131,62 @@ async def generate_scenario(message, max_tokens=500, preload_mode=False):
 
 情景：'''
     if preload_mode:
-        local_llm.create_state(prompt, 'scenario.pkl', max_tokens=1, temperature=0.8, top_k=0, top_p=0.9, min_p=0.1)
+        local_llm.create_state(prompt, 'scenario.pkl', max_tokens=1, temperature=0.5, top_k=0, top_p=0.9, min_p=0.1)
         yield ''
     else:
-        async for text in local_llm.local_llm_completion(prompt, stream=True, max_tokens=max_tokens, temperature=0.8, top_k=0, top_p=0.9, min_p=0.1, state_file='scenario.pkl'):
+        async for text in local_llm.local_llm_completion(prompt, stream=True, max_tokens=max_tokens, temperature=0.5, top_k=0, top_p=0.9, min_p=0.1, state_file='scenario.pkl'):
             yield text
 
-async def generate_scenario_persuasion(message_records: list) -> str:
+async def generate_scenario_persuasion(message_records: list, value, max_tokens=500, preload_mode=False):
     '''
     Generate follow-up questions based on the conversation between user and chatbot.
     message_record should be a list of messages in the following structure:
     - message
     - isUser
     '''
-    prompt = f'''\
-你是一名老師，根據學生的回答作出回應。稱呼學生為學生。\
-如果違反承諾，簡短引導學生跟隨承諾這個價值觀。\
-如果跟隨承諾，簡短嘗試改變問題讓學生違反承諾。\
-如果偏離問題，帶學生回到問題。
+    prompt = f'''<|start_header_id|>user<|end_header_id|>
+
+你是一名老師，根據學生的選擇符不符合價值觀作出一句短回應，讓學生回答。\
+如果符合，簡單稱讚，之後問一個假設違反價值觀後果問題。\
+如果不符合，溫柔說明違反的後果，引導學生更換選擇，不要壓力。\
+如果偏離問題，帶回問題。價值觀為{value}。
 
 '''
     for message_record in message_records:
         message = message_record['message']
         role = '學生' if message_record['isUser'] else '老師'
         prompt += f'{role}: {message}\n'
-    prompt += '老師：'
-    generator = llm_response(prompt)
-    result = await obtain_text_from_generator(generator)
-    modified_result = '老師：' + result.strip()
-    response = extract_chinese_between_chars(modified_result, '老師：', '')
-    return response[0] if response else ''
+    prompt += '老師：<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n'
+    if preload_mode:
+        local_llm.create_state(prompt, 'persausion.pkl', max_tokens=1, temperature=0.5, top_k=0, top_p=0.9, min_p=0.1)
+        yield ''
+    else:
+        async for text in local_llm.local_llm_completion(prompt, stream=True, max_tokens=max_tokens, temperature=0.5, top_k=0, top_p=0.9, min_p=0.1, state_file='persausion.pkl'):
+            yield text
 
-async def generate_scenario_feedback(message_records: list) -> str:
+async def generate_scenario_feedback(message_records: list, value, max_tokens=500, preload_mode=False):
     '''
     Generate feedback based on the conversation between user and chatbot.
     message_record should be a list of messages in the following structure:
     - message
     - isUser
     '''
-    prompt = f'''\
-你是一名老師，總結你和學生的對話，給學生關於承諾的回饋。
+    prompt = f'''<|start_header_id|>user<|end_header_id|>
+
+你是一名老師，根據你和學生的對話，以學生為第二人稱簡單總結，說說其他時候如何運用{value}。
 
 '''
     for message_record in message_records:
         message = message_record['message']
         role = '學生' if message_record['isUser'] else '老師'
         prompt += f'{role}: {message}\n'
-    prompt += '老師：'
-    generator = llm_response(prompt)
-    result = await obtain_text_from_generator(generator)
-    modified_result = '老師：' + result.strip()
-    response = extract_chinese_between_chars(modified_result, '老師：', '')
-    return response[0] if response else ''
+    prompt += '老師：<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n'
+    if preload_mode:
+        local_llm.create_state(prompt, 'feedback.pkl', max_tokens=1, temperature=0.5, top_k=0, top_p=0.9, min_p=0.1)
+        yield ''
+    else:
+        async for text in local_llm.local_llm_completion(prompt, stream=True, max_tokens=max_tokens, temperature=0.5, top_k=0, top_p=0.9, min_p=0.1, state_file='feedback.pkl'):
+            yield text
 
 async def preload_prompt():
     '''
@@ -195,4 +201,8 @@ async def preload_prompt():
     await generate_qa_pairs('', '', 1, True)
     print('Scenario generation preloading...')
     [_ async for _ in generate_scenario('', 1, True)]
+    print('Scenario persuasion preloading...')
+    [_ async for _ in generate_scenario_persuasion([], '', 1, True)]
+    print('Scenario feedback preloading...')
+    [_ async for _ in generate_scenario_feedback([], '', 1, True)]
     print('Prompts preloaded.')

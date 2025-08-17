@@ -172,8 +172,6 @@ async def routing_message(chat_id):
         
         case 5:
             # Stage 5: Generate similar scenario
-            value = get_chat_value(chat_id)
-
             yield update_chat_status(chat_id, 0)
 
             automated_message = "那我用一個類似的情景來考一考你吧！\n\n"
@@ -181,8 +179,7 @@ async def routing_message(chat_id):
             for text in automated_message:
                 yield text
             
-            scenario_generator = generate_scenario(message)
-            async for text in scenario_generator:
+            async for text in generate_scenario(message):
                 yield text
 
             update_chat_stage(chat_id, 6)
@@ -192,20 +189,26 @@ async def routing_message(chat_id):
             if get_user_message_count(chat_id, 6) > 3:
                 update_chat_stage(chat_id, 7)
 
+            value = get_chat_value(chat_id)
+
             records = get_stage_message(chat_id, stage)
 
             yield update_chat_status(chat_id, 0)
 
-            yield await generate_scenario_persuasion(records)
+            async for text in generate_scenario_persuasion(records, value):
+                yield text
 
         
         case 7:
             # Stage 7: Scenario Feedback
+            value = get_chat_value(chat_id)
+
             records = get_stage_message(chat_id, stage)
 
             yield update_chat_status(chat_id, 0)
 
-            yield await generate_scenario_feedback(records)
+            async for text in generate_scenario_feedback(records, value):
+                yield text
 
             update_chat_stage(chat_id, 8)
         
