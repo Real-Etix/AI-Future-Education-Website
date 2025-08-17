@@ -2,5 +2,10 @@ Flask
 Flask-SQLAlchemy
 python-dotenv
 openai
+opencc
 huggingface_hub
 llama-cpp-python
+pandas
+transformers
+sentence-transformers
+faiss-cpu
