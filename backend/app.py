@@ -27,4 +27,4 @@ def serve_static(path):
     return send_from_directory(app.static_folder, path) # type: ignore
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", debug=True)
+    app.run(host="0.0.0.0", debug=False)

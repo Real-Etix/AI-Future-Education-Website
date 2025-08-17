@@ -38,7 +38,7 @@ def init_app():
     app.config['SECRET_KEY'] = os.urandom(24)
 
     with app.app_context():
-        local_llm.init_llm(True)
+        local_llm.init_llm()
         retrieval_llm.init_sentence_llm()
         asyncio.run(preload_prompt())
 
