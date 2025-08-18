@@ -10,14 +10,14 @@ export default {
   },
   emits: ['update-chat-list'],
   data: () => ({
+    evtSource: null,
     title: '新聊天',
     message: '',
     messages: [],
     status: 'Complete',
     streamingMsg: null,
-    streamingTokens: [],
-    isTypingStream: false,
-    sseActive: false,
+    streamingMsgQueue: [],
+    isStreaming: false,
     typewriterDelayMs: 18,
     isEmojiOpen: false,
     charLimit: 100,
@@ -32,6 +32,10 @@ export default {
         this.chatID = newId;
         this.message = '';
         this.messages = [];
+        if (this.evtSource) {
+          this.evtSource.close();
+          this.evtSource = null;
+        }
         fetch('/chat-api/get-chat-message', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
@@ -50,6 +54,13 @@ export default {
         this.scrollToBottom();
       }
     )
+  },
+
+  beforeDestroy() {
+    if (this.evtSource) {
+      this.evtSource.close();
+      this.evtSource = null;
+    }
   },
   /* this is the mounted function which is used to get the text from the home page and display it in the chatbot */
   async mounted() {
@@ -122,7 +133,7 @@ export default {
     and the message will be displayed in the chatbot
     */
     async sendMessage() {
-      if (this.status === 'Pending' || this.isOverLimit || !this.message || !this.message.trim())
+      if (!this.canSend)
         return;
       this.$emit('update-chat-list');
       this.status = 'Pending';
@@ -151,32 +162,27 @@ export default {
 
     // If there are pending messages, we wait to get the messages from server.
     loadMessage() {
-      const evtSource = new EventSource(`/chat-api/send-message-response?chatID=${this.chatID}`);
+      this.evtSource = new EventSource(`/chat-api/send-message-response?chatID=${this.chatID}`);
 
-      // Create a streaming message to show the user that the message is being processed.
-      this.streamingMsg  = {
-        author: 'teacher',
-        text: '',
-        createdAt: new Date()
-      }
-      this.streamingTokens = [];
-      this.isTypingStream = false;
-      this.sseActive = true;
-
-      evtSource.onmessage = async (event) => {
+      this.evtSource.onmessage = async (event) => {
         const chunk = JSON.parse(event.data);
         this.status = chunk.status;
+        // One the streaming starts, create a streaming message to show the user that the message is being processed.
+        if (chunk.status === 'Stream Starting') {
+          this.startResponse();
+          this.scrollToBottom();
+        }
         console.log('Received status:', this.status);
         const normalized = (chunk.text || '').replace(/(\r\n|\r|\n)/g, '<br/>');
         this.enqueueStreamText(normalized);
-        if (chunk.status && chunk.status !== 'Loading') {
-          this.sseActive = false;
-          evtSource.close();
+        if (['Pending', 'Complete'].includes(chunk.status)) {
+          this.evtSource.close();
+          this.evtSource = null;
           this.maybeFinalizeStream();
           if (chunk.status === 'Pending') {
             // Start next segment after current finishes rendering
             const resumeAfter = () => {
-              if (!this.isTypingStream) {
+              if (!this.isStreaming) {
                 this.loadMessage();
               } else {
                 setTimeout(resumeAfter, 50);
@@ -186,68 +192,79 @@ export default {
           }
         }
       };
-      evtSource.onerror = (error) => {
+      this.evtSource.onerror = (error) => {
         console.error('EventSource failed:', error);
         if (this.streamingMsg) {
           this.streamingMsg.text = 'There is an error in the server. Please try again later.';
           this.messages.push(this.streamingMsg);
         }
         this.streamingMsg = null;
-        this.streamingTokens = [];
-        this.isTypingStream = false;
-        this.sseActive = false;
-        evtSource.close();
+        this.streamingMsgQueue = [];
+        this.isStreaming = false;
+        this.evtSource.close();
+        this.evtSource = null;
       };
       // Wait for the EventSource to close.
     },
+
+    // Split text into individual characters for mimicking streaming
     enqueueStreamText(text) {
       if (!text) return;
-      // Preserve <br/> as its own tokens, then tokenize each segment
+
+      // Tokenize each segments seperated by <br/>
       const parts = text.split(/(<br\/>)/);
-      const tokens = [];
       for (const part of parts) {
         if (!part) continue;
         if (part === '<br/>') {
-          tokens.push(part);
-          continue;
+          this.streamingMsgQueue.push(part);
         }
         if (/\s/.test(part)) {
           // Split by whitespace but keep whitespace tokens
           const wsTokens = part.split(/(\s+)/).filter(t => t.length > 0);
-          tokens.push(...wsTokens);
+          this.streamingMsgQueue.push(...wsTokens);
         } else {
           // No whitespace (e.g., Chinese) -> split into characters
-          tokens.push(...Array.from(part));
+          this.streamingMsgQueue.push(...Array.from(part));
         }
       }
-      this.streamingTokens.push(...tokens);
-      if (!this.isTypingStream) {
+      if (!this.isStreaming) {
         this.typewriterAppend();
       }
     },
 
+    // Add the token to the visualizing message one by one to mimic streaming.
     typewriterAppend() {
       if (!this.streamingMsg) return;
-      const nextToken = this.streamingTokens.shift();
+      const nextToken = this.streamingMsgQueue.shift();
       if (nextToken !== undefined) {
+        this.isStreaming = true;
         this.streamingMsg.text += nextToken;
-        this.isTypingStream = true;
-        this.scrollToBottom();
         setTimeout(() => this.typewriterAppend(), this.typewriterDelayMs);
       } else {
-        this.isTypingStream = false;
+        this.isStreaming = false;
         this.maybeFinalizeStream();
       }
+      this.scrollToBottom();
     },
 
     maybeFinalizeStream() {
       // Finalize only when SSE ended and no tokens remain
-      if (!this.sseActive && !this.isTypingStream && this.streamingTokens.length === 0 && this.streamingMsg) {
+      if (!this.evtSource && this.streamingMsgQueue.length === 0 && !this.isStreaming) {
         this.messages.push(this.streamingMsg);
         this.streamingMsg = null;
-        this.scrollToBottom();
       }
     },
+
+    startResponse() {
+      this.streamingMsg = {
+        author: 'teacher',
+        text: '',
+        createdAt: new Date()
+      }
+      this.streamingMsgQueue = [],
+      this.isStreaming = false;
+    },
+
   },
   computed: {
       // Messages that is sorted in ascending order by the creation time.
@@ -267,7 +284,11 @@ export default {
         return this.currentLength > this.charLimit;
       },
       canSend() {
-        return !this.isOverLimit && this.status !== 'Pending' && this.message && this.message.trim().length > 0;
+        return (
+          !this.isOverLimit && 
+          this.status === 'Complete' && 
+          this.message && 
+          this.message.trim().length > 0);
       }
   }
 };

@@ -13,6 +13,8 @@ import json
 # This file defines the chat API blueprint
 chat_api = Blueprint('chat_api', __name__)
 
+pending_messages = {}
+
 def iter_over_async(ait, loop, status='Complete'):
     ait = ait.__aiter__()
     async def get_next():
@@ -20,12 +22,13 @@ def iter_over_async(ait, loop, status='Complete'):
             return False, await ait.__anext__()
         except StopAsyncIteration:
             return True, None
+    yield f"data: {json.dumps({'text': '', 'status': 'Stream Starting'})}\n\n"
     while True:
         done, value = loop.run_until_complete(get_next())
         if done:
             yield f"data: {json.dumps({'text': '', 'status': status})}\n\n"
             break
-        yield f"data: {json.dumps({'text': value, 'status': 'Loading'})}\n\n"
+        yield f"data: {json.dumps({'text': value, 'status': 'Stream Loading'})}\n\n"
 
 # def generator_to_json(generator, status='Complete'):
 #     """
