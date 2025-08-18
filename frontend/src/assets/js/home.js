@@ -3,8 +3,9 @@ import valueList from '@/assets/display/valueList';
 import consultList from '@/assets/display/consultList';
 import Emoji from '@/components/Emoji.vue';
 import Handwriting from '@/components/Handwriting.vue';
+import SpeechMic from '@/components/SpeechMic.vue';
 export default {
-    components: { Emoji, Handwriting },
+    components: { Emoji, Handwriting, SpeechMic },
     props: {
         userID: Number,
     },
@@ -31,6 +32,10 @@ export default {
         },
         onHandwritingSelect(text) {
             const next = (this.inputText || '') + text;
+            this.inputText = next.length > this.charLimit ? next.slice(0, this.charLimit) : next;
+        },
+        onMicResult(transcript) {
+            const next = (this.inputText || '') + transcript;
             this.inputText = next.length > this.charLimit ? next.slice(0, this.charLimit) : next;
         },
         async createChatByTopic() {
@@ -63,6 +68,7 @@ export default {
             }
         }
     },
+
     computed: {
         currentLength() {
             return (this.inputText || '').length;

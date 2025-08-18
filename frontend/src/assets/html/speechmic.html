@@ -1,0 +1,7 @@
+
+<div class="speech-mic">
+    <button type="button" class="mic-toggle" :class="{ listening: isListening }" :disabled="!isSpeechSupported" @click="toggleMic">
+      <span class="material-symbols-outlined">{{ isListening ? 'mic_off' : 'mic' }}</span>
+    </button>
+    <span v-if="isListening" class="mic-status">正在聆聽…</span>
+  </div>
