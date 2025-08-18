@@ -32,10 +32,13 @@ async def send_message_replace_line_break(chat_id, generator, is_user):
         async generator: A new asynchronous generator with line breaks replaced.
     """
     text = ''
+    last_chunk = ''
     async for chunk in generator:
+        if last_chunk == '\n' and (chunk in ['\r', '\n']):
+            continue
         text += chunk
-        chunk = re.sub(r'(\r\n|\r|\n)', '<br/>', chunk)
         yield chunk
+        last_chunk = chunk
     send_message(chat_id, text, is_user)
 
 

@@ -79,7 +79,6 @@ def get_chat_status(chat_id: int):
     result = db.session.execute(
         select(Chat.status).filter_by(id=chat_id)
     ).scalar()
-    print(result)
     return 'Pending' if result else 'Complete'
 
 def get_chat_value(chat_id: int):
