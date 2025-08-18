@@ -1,9 +1,11 @@
 import Emoji from '@/components/Emoji.vue'
 import Handwriting from '@/components/Handwriting.vue'
+import SpeechMic from '@/components/SpeechMic.vue'
 export default {
   components: {
     Emoji,
-    Handwriting
+    Handwriting,
+    SpeechMic
   },
   props: {
     userID: Number,
@@ -66,6 +68,7 @@ export default {
   async mounted() {
     this.chatID = this.$route.params.id;
     this.status = 'Pending'
+
     await fetch('/chat-api/get-chat-message', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
@@ -89,6 +92,7 @@ export default {
     }
     
   },
+
   methods: {
     toggleEmoji() {
       this.isEmojiOpen = !this.isEmojiOpen;
@@ -96,6 +100,15 @@ export default {
 
     toggleHandwriting() {
       this.isHandwritingOpen = !this.isHandwritingOpen;
+    },
+
+    onMicResult(transcript) {
+      const next = (this.message || '') + transcript;
+      this.message = next.length > this.charLimit ? next.slice(0, this.charLimit) : next;
+      this.$nextTick(() => {
+        const ta = document.querySelector('.message-input');
+        if (ta) ta.focus();
+      });
     },
 
     applyCandidate(text) {

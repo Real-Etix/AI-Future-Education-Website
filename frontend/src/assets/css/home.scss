@@ -43,9 +43,10 @@
         .upload {
             margin: 0 auto;
             display: flex;
+            align-items: center;
             justify-content: flex-end;
             gap: 8px;
-            .emoji-toggle, .handwriting-toggle {
+            .emoji-toggle, .handwriting-toggle, .mic-toggle{
                 background-color: transparent;
                 border: none;
                 border-radius: 14px;

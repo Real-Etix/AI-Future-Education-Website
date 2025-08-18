@@ -12,6 +12,7 @@
             <button type="button" class="handwriting-toggle" @click="isHandwritingOpen = true">
                 <span class="material-symbols-outlined">draw</span>
             </button>
+            <SpeechMic @result="onMicResult" />
             <button :disabled="!canCreate">
                 <span class="send-button" @click="createChatByTopic">
                     <span class="material-symbols-outlined">arrow_upward</span>
