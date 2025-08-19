@@ -92,7 +92,7 @@ async def routing_message(chat_id):
                 automated_message = '你好！今天想學習什麼價值觀？'
             
             else:
-                set_chat_value(chat_id, value)
+                set_chat_value(chat_id, value) # type: ignore
 
                 yield update_chat_status(chat_id, 1)
 

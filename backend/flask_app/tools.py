@@ -4,17 +4,36 @@ import re
 
 def extract_chinese_between_chars(text, start, end=''):
     """
-    Extracts Chinese characters between two specified Chinese characters.
+    Extracts Chinese characters between two specified characters.
 
     Args:
         text (str): The input string.
-        start (str): The starting Chinese character.
-        end (str): The ending Chinese character.
+        start (str): The starting character.
+        end (str): The ending character.
 
     Returns:
         list: A list of strings containing the extracted Chinese characters.
     """
     pattern = rf"{re.escape(start)}\s*([\u3000-\u303F\u4E00-\u9FFF\uFF00-\uFFEF]+)\s*{re.escape(end)}"
+    matches = re.findall(pattern, text, re.UNICODE)
+    for i in range(len(matches)):
+        matches[i] = matches[i][3:] if matches[i][:3] == start else matches[i]
+    return matches
+
+def extract_chinese_words_between_chars(text, start, end=''):
+    '''
+    Extracts Chinese characters (excluding punctuations) between two specified characters.
+    This is used to extract items between Chinese punctuations.
+
+    Args:
+        text (str): The input string.
+        start (str): The starting character.
+        end (str): The ending character.
+
+    Returns:
+        list: A list of strings containing the extracted Chinese characters.
+    '''
+    pattern = rf"{re.escape(start)}\s*[\u3000-\u303F\uFF00-\uFFEF]*([\u4E00-\u9FFF]+)[\u3000-\u303F\uFF00-\uFFEF]*\s*{re.escape(end)}"
     matches = re.findall(pattern, text, re.UNICODE)
     for i in range(len(matches)):
         matches[i] = matches[i][3:] if matches[i][:3] == start else matches[i]

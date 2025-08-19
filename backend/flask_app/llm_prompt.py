@@ -2,7 +2,7 @@
 
 import asyncio
 
-from .tools import extract_chinese_between_chars, obtain_text_from_generator
+from .tools import extract_chinese_between_chars, extract_chinese_words_between_chars, obtain_text_from_generator
 from .tables import get_value_id, get_random_story, get_story, get_story_summary, store_story_summary
 from .llm_call import local_llm, llm_response, retrieval_llm
 
@@ -18,12 +18,13 @@ async def intent_classify(message, max_tokens=5, preload_mode=False):
     # Set the prompt to feed to LLM
     prompt = f'''<|start_header_id|>user<|end_header_id|>
         
-分類用戶的意圖，意圖一定是：承諾、問候、沒有
-如果不清楚，回答沒有。
+分類用戶的意圖，意圖一定是：＜承諾、問候、沒有＞。如果不清楚，回答沒有。
 
-用戶：{cleaned_message}<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+用戶：{cleaned_message}
 
-意圖：'''
+意圖：<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+'''
     
     # Obtain output from LLM and polish the result  
     if preload_mode:
@@ -32,7 +33,7 @@ async def intent_classify(message, max_tokens=5, preload_mode=False):
     else:
         generator = local_llm.local_llm_completion(prompt, max_tokens=max_tokens, temperature=0, top_k=0, top_p=1.0, state_file='intent.pkl')
         result = await obtain_text_from_generator(generator)
-        intent = result.strip()
+        intent = extract_chinese_words_between_chars(result, '')
         return intent if intent else '沒有'
 
 async def summarize_story(story):
@@ -68,21 +69,24 @@ async def generate_new_story(value, max_tokens=500, preload_mode=False):
     else:
         summary = ''
 
+    # Although our original purpose is to generate a story with less than 500 words,
+    # It turns out that we need to tell the LLM that the story needs to not be greater than 200
+    # in order to guarantee that the story will almost never reach 500 words.
     prompt = f'''<|start_header_id|>user<|end_header_id|>
         
-以下面的故事為靈感，限制二百字內創作一段中文故事，不涉及歷史、犯罪或愛情。確保敘述簡潔明瞭，專注於塑造獨特的角色、不同的情節和新穎的場景。不要以證明、結論式陳述或道德教訓的方式結束，主體盡量有關{value}。
+受以下故事為靈感，寫一篇不超過二百字的中文故事，不要涉及歷史、犯罪、鬥爭或愛情。敘事要簡潔明瞭，聚焦在獨特的人物、豐富的情節和新穎的場景，避免以勸告、結論或道德教訓的方式結束。主體必須有關實行{value}。
 
-範例：{summary}
+靈感：{summary}
 
 故事：<|eot_id|><|start_header_id|>assistant<|end_header_id|>
 
 '''
     
     if preload_mode:
-        local_llm.create_state(prompt, 'story.pkl', max_tokens=1, temperature=1.2, top_k=0, top_p=1.0, min_p=0.1)
+        local_llm.create_state(prompt, 'story.pkl', max_tokens=1, temperature=0.8, top_k=0, top_p=1.0, min_p=0.1)
         yield ''
     else:
-        async for text in local_llm.local_llm_completion(prompt, stream=True, max_tokens=max_tokens, temperature=1.2, top_k=0, top_p=1.0, min_p=0.1, state_file='story.pkl'):
+        async for text in local_llm.local_llm_completion(prompt, stream=True, max_tokens=max_tokens, temperature=0.8, top_k=0, top_p=1.0, min_p=0.1, state_file='story.pkl'):
             yield text
 
 async def generate_qa_pairs(story, value, max_tokens=500, preload_mode=False):
@@ -93,11 +97,11 @@ async def generate_qa_pairs(story, value, max_tokens=500, preload_mode=False):
 
     prompt = f'''<|start_header_id|>user<|end_header_id|>
 
-產生三個問答對，與故事的角色、事件或怎麼跟隨價值觀有關。
+產生三個問答對，與故事人物、事件或如何遵循價值觀有關。
 
-結構："""
-問題：．．．
-答案：．．．
+輸出結構："""
+問題：＜輸入問題＞
+答案：＜輸入答案＞
 """
 
 故事（價值觀：{value}）：{story}<|eot_id|><|start_header_id|>assistant<|end_header_id|>
@@ -117,19 +121,22 @@ async def generate_qa_pairs(story, value, max_tokens=500, preload_mode=False):
 
 async def generate_scenario(message, max_tokens=500, preload_mode=False):
     '''
-    Generate a scenario based on the similar scenario with the message retrieved from the vector database.
+    Generate a scenario based on the retrieved scenario by comparing the message with those from the vector database.
     Note that it is possible that the LLM can generate the same as retrieved one. It is expected.
     '''
     if not preload_mode:
         scenario, theme = retrieval_llm.obtain_most_similar(message)
     else:
         scenario, theme = '', ''
-    prompt = f'''\
-輕微更改以下情景的角色和設定，但保留原意，不要加任何東西，主題是{theme}
+    prompt = f'''<|start_header_id|>user<|end_header_id|>
 
-情景：{scenario}<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+輕微改動一次以下原文人物和設定，讓情景更加新穎，但不要涉及歷史、犯罪、鬥爭或愛情。保留原意，選擇要明確一個合乎一個不合乎價值觀，不要說改動了什麼。原文主題是{theme}
 
-情景：'''
+原文：{scenario}
+
+改動後：<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+'''
     if preload_mode:
         local_llm.create_state(prompt, 'scenario.pkl', max_tokens=1, temperature=0.5, top_k=0, top_p=0.9, min_p=0.1)
         yield ''
