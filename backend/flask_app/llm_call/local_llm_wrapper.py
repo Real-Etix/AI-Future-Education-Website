@@ -66,6 +66,41 @@ class LocalLLM():
                 response_text = response['choices'][0]['text'] # type: ignore
                 response_text = converter.convert(response_text)
                 yield response_text
+    
+    async def local_llm_chat_completion(self, prompt, max_tokens=1024, stream=False, temperature=0.0, top_k=10, top_p=0.95, min_p=0.05, state_file=None):
+        '''
+        Send message to and receive response from LLM locally upon completion.
+        '''
+        generation_kwargs = {
+            "max_tokens": max_tokens,
+            "stop": ['<|eot_id|>','<|end_of_text|>'],
+            'temperature': temperature,
+            'stream': stream,
+            'top_k': top_k,
+            'top_p': top_p,
+            'min_p': min_p
+        }
+        if not self.llm:
+            yield "沒有"
+        else: 
+            if state_file:
+                try:
+                    with open(self.state_dir + state_file, 'rb') as f:
+                        state = pickle.load(f)
+                        self.llm.load_state(state)
+                except: pass
+            messages = [{'role': 'user', 'content': prompt}]
+            if stream:
+                for chunk in self.llm.create_chat_completion(messages, **generation_kwargs): # type: ignore
+                    response_message = chunk['choices'][0]['delta'] # type: ignore
+                    if 'content' not in response_message:
+                      continue
+                    text = response_message['content'] # type: ignore
+                    yield text
+            else:
+                response = self.llm.create_chat_completion(messages, **generation_kwargs) # type: ignore
+                response_text = response['choices'][0]['message']['content'] # type: ignore
+                yield response_text
 
     async def local_llm_response_stream(self, prompt, max_tokens, stream, temperature=0.8, top_k=10, top_p=0.95, min_p=0.05):
         async for text in self.local_llm_completion(
