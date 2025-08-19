@@ -29,7 +29,7 @@ class RetrievalModel():
     
     def obtain_most_similar(self, input, k=5):
         '''
-        Gets the most similar item with the input
+        Gets the most similar item from the vector database with the input.
         '''
 
         if not self.model:
