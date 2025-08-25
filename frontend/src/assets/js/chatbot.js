@@ -48,7 +48,7 @@ export default {
           this.title = result['title']
           this.messages = result['result'].map((row) => ({
             author: row['isUser'] ? 'student' : 'teacher',
-            text: row['message'].replace(/(\r\n|\r|\n)/g, '<br/>'),
+            text: row['message'].replace(/(\r?\n)/g, '<br/>'),
             createdAt: new Date(row['lastUpdated'])
           }));
         })
@@ -79,7 +79,7 @@ export default {
       this.title = result['title'];
       this.messages = result['result'].map((row) => ({
         author: row['isUser'] ? 'student' : 'teacher',
-        text: row['message'].replace(/(\r\n|\r|\n)/g, '<br/>'),
+        text: row['message'].replace(/(\r?\n)/g, '<br/>'),
         createdAt: new Date(row['lastUpdated'])
       }));
       this.status = result['status'];
@@ -167,6 +167,7 @@ export default {
         })
       });
 
+
       // If the status is pending, we will wait for the server to send the response.
       // This is done in the loadMessage function.
       this.loadMessage();
@@ -175,6 +176,7 @@ export default {
 
     // If there are pending messages, we wait to get the messages from server.
     loadMessage() {
+      this.startResponse();
       this.evtSource = new EventSource(`/chat-api/send-message-response?chatID=${this.chatID}`);
 
       this.evtSource.onmessage = async (event) => {
@@ -182,12 +184,10 @@ export default {
         this.status = chunk.status;
         // One the streaming starts, create a streaming message to show the user that the message is being processed.
         if (chunk.status === 'Stream Starting') {
-          this.startResponse();
           this.scrollToBottom();
         }
-        console.log('Received status:', this.status);
-        const normalized = (chunk.text || '').replace(/(\r\n|\r|\n)/g, '<br/>');
-        this.enqueueStreamText(normalized);
+        console.log('Received text:', chunk.text);
+        this.enqueueStreamText(chunk.text);
         if (['Pending', 'Complete'].includes(chunk.status)) {
           this.evtSource.close();
           this.evtSource = null;
@@ -225,13 +225,12 @@ export default {
       if (!text) return;
 
       // Tokenize each segments seperated by <br/>
-      const parts = text.split(/(<br\/>)/);
+      const parts = text.split(/(\r?\n)/);
       for (const part of parts) {
         if (!part) continue;
-        if (part === '<br/>') {
-          this.streamingMsgQueue.push(part);
-        }
-        if (/\s/.test(part)) {
+        if (['\r\n', '\n'].includes(part)) {
+          this.streamingMsgQueue.push('<br/>');
+        } else if (/\s/.test(part)) {
           // Split by whitespace but keep whitespace tokens
           const wsTokens = part.split(/(\s+)/).filter(t => t.length > 0);
           this.streamingMsgQueue.push(...wsTokens);
