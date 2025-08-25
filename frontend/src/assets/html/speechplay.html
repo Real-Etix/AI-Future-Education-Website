@@ -1,0 +1,10 @@
+<div class="speech-play" v-if="isSupported && displayText">
+    <button
+      type="button"
+      class="tts-toggle"
+      :disabled="!voiceReady"
+      @click="togglePlay"
+    >
+      <span class="material-symbols-outlined">{{ isSpeaking ? 'pause' : 'volume_up' }}</span>
+    </button>
+  </div>

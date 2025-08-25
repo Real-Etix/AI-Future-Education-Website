@@ -1,11 +1,13 @@
 import Emoji from '@/components/Emoji.vue'
 import Handwriting from '@/components/Handwriting.vue'
 import SpeechMic from '@/components/SpeechMic.vue'
+import SpeechPlay from '@/components/SpeechPlay.vue'
 export default {
   components: {
     Emoji,
     Handwriting,
-    SpeechMic
+    SpeechMic,
+    SpeechPlay
   },
   props: {
     userID: Number,
