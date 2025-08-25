@@ -34,7 +34,7 @@ async def intent_classify(message, max_tokens=5, preload_mode=False):
         generator = local_llm.local_llm_completion(prompt, max_tokens=max_tokens, temperature=0, top_k=0, top_p=1.0, state_file='intent.pkl')
         result = await obtain_text_from_generator(generator)
         intent = extract_chinese_words_between_chars(result, '')
-        return intent if intent else '沒有'
+        return intent[0] if intent else '沒有'
 
 async def summarize_story(story):
     '''

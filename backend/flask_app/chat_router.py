@@ -18,11 +18,10 @@ def send_message(chat_id, message, is_user):
     _, creation_time = append_message(chat_id, stage, message, is_user)
     update_chat_last_updated(chat_id)
 
-async def send_message_replace_line_break(chat_id, generator, is_user):
+async def send_message_through_generator(chat_id, generator, is_user):
     """
-    Replaces line breaks in the text from an asynchronous generator.
-    Send the message after processing.
-
+    Send the message after processing an asynchronous generator.
+    
     Args:
         chat_id (int): The ID of the chat.
         generator (async generator): The asynchronous generator to process.
@@ -32,13 +31,9 @@ async def send_message_replace_line_break(chat_id, generator, is_user):
         async generator: A new asynchronous generator with line breaks replaced.
     """
     text = ''
-    last_chunk = ''
     async for chunk in generator:
-        if last_chunk == '\n' and (chunk in ['\r', '\n']):
-            continue
         text += chunk
         yield chunk
-        last_chunk = chunk
     send_message(chat_id, text, is_user)
 
 

@@ -6,7 +6,7 @@ from .tables import (
     append_chat, update_chat_last_updated, 
     get_message_list
 )
-from .chat_router import send_message, send_message_replace_line_break, routing_begin_message, routing_message
+from .chat_router import send_message, send_message_through_generator, routing_begin_message, routing_message
 import asyncio
 import json
 
@@ -112,7 +112,7 @@ def response_message_stream():
     
     generator = routing_message(chat_id)
     has_unsent_message = asyncio.run(anext(generator, 'Complete')) # type: ignore
-    response_generator = send_message_replace_line_break(chat_id, generator, 0)
+    response_generator = send_message_through_generator(chat_id, generator, 0)
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     iter_gen = iter_over_async(response_generator, loop, status=has_unsent_message)
